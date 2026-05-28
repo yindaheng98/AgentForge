@@ -1,39 +1,34 @@
-import type { CodexOptions, Input, ThreadEvent, ThreadOptions } from "@openai/codex-sdk";
-import type { Options, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
-import type { OpencodeClient, ServerOptions, SessionPromptResponse } from "@opencode-ai/sdk";
+import type { CodexOptions as CodexSdkRuntimeOptions, Input, ThreadEvent, ThreadOptions as CodexSdkThreadOptions } from "@openai/codex-sdk";
+import type { Options as ClaudeSdkThreadOptions, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
+import type { OpencodeClient, ServerOptions as OpencodeSdkRuntimeOptions, SessionPromptResponse } from "@opencode-ai/sdk";
 
-type OpenCodeSessionCreateOptions = Parameters<OpencodeClient["session"]["create"]>[0];
+type OpencodeSdkThreadOptions = Parameters<OpencodeClient["session"]["create"]>[0];
+type ClaudeSdkRuntimeOptions = never;
 
-export type CodingRuntimeKind = "codex" | "claude" | "opencode";
+export type RuntimeKind = "codex" | "claude" | "opencode";
 
-export type CodingRuntimeOptions<K extends CodingRuntimeKind = CodingRuntimeKind> = {
-  codex: CodexOptions;
-  claude: never;
-  opencode: ServerOptions;
+export type RuntimeOptions<K extends RuntimeKind = RuntimeKind> = {
+  codex: CodexSdkRuntimeOptions;
+  claude: ClaudeSdkRuntimeOptions;
+  opencode: OpencodeSdkRuntimeOptions;
 }[K];
 
-export type CodingThreadOptions<K extends CodingRuntimeKind = CodingRuntimeKind> = {
-  codex: ThreadOptions;
-  claude: Options;
-  opencode: OpenCodeSessionCreateOptions;
+export type ThreadOptions<K extends RuntimeKind = RuntimeKind> = {
+  codex: CodexSdkThreadOptions;
+  claude: ClaudeSdkThreadOptions;
+  opencode: OpencodeSdkThreadOptions;
 }[K];
 
-export type CodexRuntimeOptions = CodingRuntimeOptions<"codex">;
-export type CodexThreadOptions = CodingThreadOptions<"codex">;
-export type ClaudeThreadOptions = CodingThreadOptions<"claude">; // no runtime options for Claude
-export type OpenCodeRuntimeOptions = CodingRuntimeOptions<"opencode">;
-export type OpenCodeThreadOptions = CodingThreadOptions<"opencode">;
-
-export interface CodingAgentRuntime<K extends CodingRuntimeKind = CodingRuntimeKind> {
-  startThread(options: CodingThreadOptions<K>): Promise<CodingThread>;
+export interface Runtime<K extends RuntimeKind = RuntimeKind> {
+  startThread(options: ThreadOptions<K>): Promise<Thread>;
 }
 
-export interface CodingThread {
-  runStreamed(prompt: string): AsyncIterable<CodingRuntimeOutput>;
+export interface Thread {
+  runStreamed(prompt: string): AsyncIterable<Record>;
   close?(): Promise<void>;
 }
 
-export type CodingRuntimeOutput =
+export type Record =
   | { runtime: "codex"; input: Input }
   | { runtime: "codex"; event: ThreadEvent }
   | { runtime: "claude"; message: SDKMessage }
