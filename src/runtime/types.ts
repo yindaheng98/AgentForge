@@ -1,6 +1,6 @@
 import type { CodexOptions, ThreadEvent, ThreadOptions } from "@openai/codex-sdk";
 import type { Options as ClaudeOptions, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
-import type { AssistantMessage, OpencodeClient, Part, ServerOptions } from "@opencode-ai/sdk";
+import type { OpencodeClient, ServerOptions, SessionPromptResponse } from "@opencode-ai/sdk";
 
 type OpenCodeSessionCreateOptions = Parameters<OpencodeClient["session"]["create"]>[0];
 
@@ -47,5 +47,4 @@ export interface CodingThread {
 export type CodingRuntimeOutput =
   | { runtime: "codex"; event: ThreadEvent }
   | { runtime: "claude"; message: SDKMessage }
-  | { runtime: "opencode"; info: AssistantMessage }
-  | { runtime: "opencode"; part: Part };
+  | { runtime: "opencode"; response: SessionPromptResponse };
