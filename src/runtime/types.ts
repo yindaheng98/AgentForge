@@ -1,35 +1,26 @@
 import type { CodexOptions, Input, ThreadEvent, ThreadOptions } from "@openai/codex-sdk";
-import type { Options as ClaudeOptions, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
+import type { Options, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import type { OpencodeClient, ServerOptions, SessionPromptResponse } from "@opencode-ai/sdk";
 
 type OpenCodeSessionCreateOptions = Parameters<OpencodeClient["session"]["create"]>[0];
 
 export type CodingRuntimeKind = "codex" | "claude" | "opencode";
 
-export type OptionsByRuntime = {
-  codex: {
-    runtime: CodexOptions;
-    thread: ThreadOptions;
-  };
-  claude: {
-    runtime: never;
-    thread: ClaudeOptions;
-  };
-  opencode: {
-    runtime: ServerOptions;
-    thread: OpenCodeSessionCreateOptions;
-  };
-};
+export type CodingRuntimeOptions<K extends CodingRuntimeKind = CodingRuntimeKind> = {
+  codex: CodexOptions;
+  claude: never;
+  opencode: ServerOptions;
+}[K];
 
-export type CodingRuntimeOptions<K extends CodingRuntimeKind = CodingRuntimeKind> =
-  OptionsByRuntime[K]["runtime"];
-
-export type CodingThreadOptions<K extends CodingRuntimeKind = CodingRuntimeKind> =
-  OptionsByRuntime[K]["thread"];
+export type CodingThreadOptions<K extends CodingRuntimeKind = CodingRuntimeKind> = {
+  codex: ThreadOptions;
+  claude: Options;
+  opencode: OpenCodeSessionCreateOptions;
+}[K];
 
 export type CodexRuntimeOptions = CodingRuntimeOptions<"codex">;
 export type CodexThreadOptions = CodingThreadOptions<"codex">;
-export type ClaudeThreadOptions = CodingThreadOptions<"claude">;
+export type ClaudeThreadOptions = CodingThreadOptions<"claude">; // no runtime options for Claude
 export type OpenCodeRuntimeOptions = CodingRuntimeOptions<"opencode">;
 export type OpenCodeThreadOptions = CodingThreadOptions<"opencode">;
 
@@ -38,7 +29,6 @@ export interface CodingAgentRuntime<K extends CodingRuntimeKind = CodingRuntimeK
 }
 
 export interface CodingThread {
-  id?: string;
   runStreamed(prompt: string): AsyncIterable<CodingRuntimeOutput>;
   close?(): Promise<void>;
 }
@@ -47,5 +37,5 @@ export type CodingRuntimeOutput =
   | { runtime: "codex"; input: Input }
   | { runtime: "codex"; event: ThreadEvent }
   | { runtime: "claude"; message: SDKMessage }
-  | { runtime: "opencode"; request: { path: { id: string }; body: { parts: Array<{ type: "text"; text: string }> } } }
+  | { runtime: "opencode"; request: string }
   | { runtime: "opencode"; response: SessionPromptResponse };
