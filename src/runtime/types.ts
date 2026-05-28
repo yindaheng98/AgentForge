@@ -19,18 +19,19 @@ export type ThreadOptions<K extends RuntimeKind = RuntimeKind> = {
   opencode: OpencodeSdkThreadOptions;
 }[K];
 
+export type Record<K extends RuntimeKind = RuntimeKind> = {
+  codex: { runtime: "codex"; input: Input } | { runtime: "codex"; event: ThreadEvent };
+  claude: { runtime: "claude"; message: SDKMessage };
+  opencode: { runtime: "opencode"; request: string } | { runtime: "opencode"; response: SessionPromptResponse };
+}[K];
+
 export interface Runtime<K extends RuntimeKind = RuntimeKind> {
-  startThread(options: ThreadOptions<K>): Promise<Thread>;
+  startThread(options: ThreadOptions<K>): Promise<Thread<K>>;
 }
 
-export interface Thread {
-  runStreamed(prompt: string): AsyncIterable<Record>;
+export type RecordCallback<K extends RuntimeKind = RuntimeKind> = (record: Record<K>) => void | Promise<void>;
+
+export interface Thread<K extends RuntimeKind = RuntimeKind> {
+  runStreamed(prompt: string, onRecord?: RecordCallback<K>): Promise<string>;
   close?(): Promise<void>;
 }
-
-export type Record =
-  | { runtime: "codex"; input: Input }
-  | { runtime: "codex"; event: ThreadEvent }
-  | { runtime: "claude"; message: SDKMessage }
-  | { runtime: "opencode"; request: string }
-  | { runtime: "opencode"; response: SessionPromptResponse };
