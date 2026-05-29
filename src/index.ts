@@ -1,6 +1,6 @@
 export { loadConfig } from "./runtime/config.js";
 export type { Config, RuntimeDefinition, ThreadDefinition } from "./runtime/config.js";
-export { createRuntime, startThread, startThreadFromConfig } from "./runtime/index.js";
+export { createRuntime, startThread } from "./runtime/index.js";
 export { CodexRuntime, CodexThread } from "./runtime/codex.js";
 export { ClaudeRuntime, ClaudeThread } from "./runtime/claude.js";
 export { QwenRuntime, QwenThread } from "./runtime/qwen.js";
@@ -9,6 +9,7 @@ export type {
   RuntimeKind,
   Runtime,
   RuntimeOptions,
+  BaseRuntime,
   Thread,
   ThreadOptions,
   Record,

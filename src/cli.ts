@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
-import { loadConfig, startThreadFromConfig } from "./index.js";
+import { createRuntime, loadConfig, startThread } from "./index.js";
 
 const { values, positionals: prompts } = parseArgs({
   args: process.argv.slice(2),
@@ -21,13 +21,28 @@ if (prompts.length === 0) {
 }
 
 const config = await loadConfig(...(configPaths.length > 0 ? configPaths : ["agent-forge.yaml"]));
-const threadName = values.thread ?? Object.keys(config.threads)[0];
-if (!threadName) {
-  throw new Error("Config must define at least one thread");
-}
-const thread = await startThreadFromConfig(config, threadName);
+const [defaultThreadName = ""] = Object.keys(config.threads);
+const threadName = values.thread ?? defaultThreadName;
 
-for (const prompt of prompts) {
-  const response = await thread.runStreamed(prompt);
-  process.stdout.write(`${response}\n`);
+const threadDefinition = config.threads[threadName];
+if (!threadDefinition) {
+  throw new Error(`Unknown thread: ${threadName}`);
+}
+
+const runtimeDefinition = config.runtimes[threadDefinition.runtime];
+if (!runtimeDefinition) {
+  throw new Error(`Unknown runtime for thread ${threadName}: ${threadDefinition.runtime}`);
+}
+
+const runtime = createRuntime(runtimeDefinition);
+
+try {
+  const thread = await startThread(runtime, threadDefinition);
+
+  for (const prompt of prompts) {
+    const response = await thread.runStreamed(prompt);
+    process.stdout.write(`${response}\n`);
+  }
+} finally {
+  await runtime.close();
 }

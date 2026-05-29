@@ -54,22 +54,26 @@ config so it can override sensitive fields locally.
 ## Library usage
 
 ```ts
-import { loadConfig, startThreadFromConfig } from "agent-forge";
+import { createRuntime, loadConfig, startThread } from "agent-forge";
 
 const config = await loadConfig("agent-forge.yaml");
-const thread = await startThreadFromConfig(config, "runner");
+const threadDefinition = config.threads.runner;
+const runtimeDefinition = config.runtimes[threadDefinition.runtime];
+const runtime = createRuntime(runtimeDefinition);
+const thread = await startThread(runtime, threadDefinition);
 
 const finalResponse = await thread.runStreamed("Inspect this repo.", (event) => {
   console.log(event);
 });
 
 console.log(finalResponse);
+await runtime.close();
 ```
 
 ## CLI
 
 ```bash
-npm run dev -- --config agent-forge.yaml --config secret.yaml --thread runner "Inspect this repo" "How to use this repo"
+npm run dev -- --config agent-forge.yaml --config secret.yaml --thread runner "Inspect this repo" "What did you just do? Is this a new conversation?"
 ```
 
 Pass multiple `--config` files to merge them in order; object fields in later

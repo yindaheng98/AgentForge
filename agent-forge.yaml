@@ -5,6 +5,9 @@ runtimes:
   claude:
     kind: claude
 
+  qwen:
+    kind: qwen
+
   deepseek:
     kind: opencode
     options:
