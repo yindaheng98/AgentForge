@@ -21,18 +21,18 @@ The workflow layer gets records with a `runtime` marker added:
 npm install
 ```
 
-## Build and test
+## Build and checks
 
 ```bash
 npm run check
+npm run lint
+npm run format:check
 npm run build
-npm test
 ```
 
 ## Config
 
-Copy `agent-forge.example.yaml` to `agent-forge.yaml` and edit the runtime
-models/providers you want to use.
+Use `agent-forge.yaml` to configure the runtime models/providers you want.
 
 ```yaml
 runtimes:
@@ -46,6 +46,9 @@ threads:
       model: gpt-5.4
       workingDirectory: .
 ```
+
+Put private provider credentials in `secret.yaml` and pass it after the base
+config so it can override sensitive fields locally.
 
 ## Library usage
 
@@ -73,5 +76,5 @@ files are merged into earlier files. Omit `--thread` to run the first thread in
 the merged config. Pass multiple quoted prompts to run a multi-turn conversation
 on the same thread.
 
-The CLI prints one JSON event per line, followed by a
-`{"type":"final_response","response":"..."}` record for each prompt.
+The CLI prints one JSON event per line, followed by the final response text for
+each prompt.
