@@ -1,11 +1,16 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
-import type { RuntimeKind, RuntimeOptions, ThreadOptions } from "./runtime/types.js";
+import {
+  getRuntimeFactory,
+  type Runtime,
+  type RuntimeKind,
+  type RuntimeOptions,
+  type Thread,
+  type ThreadOptions,
+} from "./runtime/index.js";
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
-  [P in K]: RuntimeOptions<P> extends never
-    ? { kind: P }
-    : { kind: P; options?: RuntimeOptions<P> };
+  [P in K]: { kind: P; options?: RuntimeOptions<P> };
 }[K];
 
 export type ThreadDefinition = {
@@ -93,4 +98,12 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
   }
 
   return config as Config;
+}
+
+export function createRuntime<K extends RuntimeKind>(runtime: RuntimeDefinition<K>): Runtime<K> {
+  return getRuntimeFactory(runtime.kind)(runtime.options);
+}
+
+export function startThread(runtime: Runtime, thread: ThreadDefinition): Promise<Thread> {
+  return runtime.startThread(thread.options ?? {});
 }
