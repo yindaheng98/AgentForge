@@ -4,7 +4,7 @@ import type {
   RuntimeKind,
   RuntimeOptions,
   ThreadOptions,
-} from "./runtime/types.js";
+} from "./types.js";
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
   [P in K]: RuntimeOptions<P> extends never
@@ -29,6 +29,9 @@ export async function loadConfig(path: string): Promise<Config> {
   }
   if (!config.threads || typeof config.threads !== "object") {
     throw new Error("Config must define a threads object");
+  }
+  if (Object.keys(config.threads).length === 0) {
+    throw new Error("Config must define at least one thread");
   }
   for (const [name, thread] of Object.entries(config.threads)) {
     if (!config.runtimes[thread.runtime]) {
