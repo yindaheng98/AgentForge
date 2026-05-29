@@ -28,7 +28,8 @@ if (!threadName) {
 const thread = await startThreadFromConfig(config, threadName);
 
 for (const prompt of prompts) {
-  await thread.runStreamed(prompt, (event) => {
+  const response = await thread.runStreamed(prompt, (event) => {
     process.stdout.write(`${JSON.stringify(event)}\n`);
   });
+  process.stdout.write(response);
 }

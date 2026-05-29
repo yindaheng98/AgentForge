@@ -1,0 +1,33 @@
+runtimes:
+  codex:
+    kind: codex
+
+  claude:
+    kind: claude
+
+  deepseek:
+    kind: opencode
+    options:
+      config:
+        model: deepseek/deepseek-chat
+        small_model: deepseek/deepseek-chat
+        enabled_providers:
+          - deepseek
+        provider:
+          deepseek:
+            name: DeepSeek
+            options:
+              baseURL: https://api.deepseek.com
+
+threads:
+  runner:
+    runtime: codex
+    options:
+      model: gpt-5.3-codex
+      workingDirectory: .
+
+  deepseek-runner:
+    runtime: deepseek
+    options:
+      query:
+        directory: .

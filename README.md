@@ -65,7 +65,7 @@ console.log(finalResponse);
 ## CLI
 
 ```bash
-npm run dev -- --config agent-forge.yaml --config local.yaml --thread runner "Inspect this repo"
+npm run dev -- --config agent-forge.yaml --config secret.yaml --thread runner "Inspect this repo"
 ```
 
 Pass multiple `--config` files to merge them in order; object fields in later
@@ -73,4 +73,5 @@ files are merged into earlier files. Omit `--thread` to run the first thread in
 the merged config. Pass multiple quoted prompts to run a multi-turn conversation
 on the same thread.
 
-The CLI prints one JSON event per line.
+The CLI prints one JSON event per line, followed by a
+`{"type":"final_response","response":"..."}` record for each prompt.
