@@ -45,5 +45,6 @@ export type RecordCallback<K extends RuntimeKind = RuntimeKind> = (
 ) => void | Promise<void>;
 
 export interface Thread<K extends RuntimeKind = RuntimeKind> {
+  recordToPrettyString(record: Record<K>): string;
   runStreamed(prompt: string, onRecord?: RecordCallback<K>): Promise<string>;
 }
