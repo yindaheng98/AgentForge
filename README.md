@@ -1,6 +1,6 @@
-# agent-forge
+# coding-agent-forge
 
-`agent-forge` is a small TypeScript runtime wrapper for coding agents. The
+`coding-agent-forge` is a small TypeScript runtime wrapper for coding agents. The
 lowest abstraction is `Runtime`, a thin wrapper around an existing coding-agent
 SDK.
 
@@ -54,7 +54,7 @@ config so it can override sensitive fields locally.
 ## Library usage
 
 ```ts
-import { createRuntime, loadConfig, startThread } from "agent-forge";
+import { createRuntime, loadConfig, startThread } from "coding-agent-forge";
 
 const config = await loadConfig("agent-forge.yaml");
 const threadDefinition = config.threads.runner;

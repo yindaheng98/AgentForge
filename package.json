@@ -1,5 +1,5 @@
 {
-  "name": "agent-forge",
+  "name": "coding-agent-forge",
   "version": "0.1.0",
   "description": "A small runtime wrapper for Codex, Claude, Qwen Code, and opencode.",
   "type": "module",
@@ -13,7 +13,7 @@
     }
   },
   "bin": {
-    "agent-forge": "./dist/cli.js"
+    "agent-forge": "dist/cli.js"
   },
   "files": [
     "dist",
