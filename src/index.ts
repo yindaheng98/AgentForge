@@ -6,7 +6,10 @@ export { ClaudeRuntime, ClaudeThread } from "./runtime/claude.js";
 export { OpencodeRuntime, OpencodeThread } from "./runtime/opencode.js";
 export type {
   RuntimeKind,
-  Runtime, RuntimeOptions,
-  Thread, ThreadOptions,
-  Record, RecordCallback,
+  Runtime,
+  RuntimeOptions,
+  Thread,
+  ThreadOptions,
+  Record,
+  RecordCallback,
 } from "./runtime/types.js";
