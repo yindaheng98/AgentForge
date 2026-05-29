@@ -33,5 +33,4 @@ export type RecordCallback<K extends RuntimeKind = RuntimeKind> = (record: Recor
 
 export interface Thread<K extends RuntimeKind = RuntimeKind> {
   runStreamed(prompt: string, onRecord?: RecordCallback<K>): Promise<string>;
-  close?(): Promise<void>;
 }
