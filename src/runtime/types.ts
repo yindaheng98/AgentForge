@@ -1,6 +1,6 @@
 import type { CodexOptions as CodexSdkRuntimeOptions, Input, ThreadEvent, ThreadOptions as CodexSdkThreadOptions } from "@openai/codex-sdk";
 import type { Options as ClaudeSdkThreadOptions, SDKMessage } from "@anthropic-ai/claude-agent-sdk";
-import type { OpencodeClient, ServerOptions as OpencodeSdkRuntimeOptions, SessionPromptResponse } from "@opencode-ai/sdk";
+import type { Event as OpencodeEvent, OpencodeClient, ServerOptions as OpencodeSdkRuntimeOptions } from "@opencode-ai/sdk";
 
 type OpencodeSdkThreadOptions = Parameters<OpencodeClient["session"]["create"]>[0];
 type ClaudeSdkRuntimeOptions = never;
@@ -22,7 +22,7 @@ export type ThreadOptions<K extends RuntimeKind = RuntimeKind> = {
 export type Record<K extends RuntimeKind = RuntimeKind> = {
   codex: { runtime: "codex"; input: Input } | { runtime: "codex"; event: ThreadEvent };
   claude: { runtime: "claude"; message: SDKMessage };
-  opencode: { runtime: "opencode"; request: string } | { runtime: "opencode"; response: SessionPromptResponse };
+  opencode: { runtime: "opencode"; request: string } | { runtime: "opencode"; event: OpencodeEvent };
 }[K];
 
 export interface Runtime<K extends RuntimeKind = RuntimeKind> {

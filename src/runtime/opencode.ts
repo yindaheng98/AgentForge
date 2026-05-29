@@ -46,18 +46,46 @@ class OpenCodeThread implements Thread<"opencode"> {
 
     await onRecord?.({ runtime: "opencode", request: prompt });
 
-    const response = await this.client.session.prompt({
+    const { stream } = await this.client.event.subscribe({
+      throwOnError: true,
+    });
+
+    await this.client.session.promptAsync({
       ...request,
       throwOnError: true,
     });
 
-    await onRecord?.({ runtime: "opencode", response: response.data });
+    for await (const event of stream) {
+      if ("sessionID" in event.properties && event.properties.sessionID === this.sessionId) {
+        await onRecord?.({ runtime: "opencode", event });
 
-    if (response.data.info.error) {
-      throw new Error(response.data.info.error.name);
+        if (event.type === "session.error") {
+          throw new Error(event.properties.error?.name ?? "OpenCode session error");
+        }
+
+        if (event.type === "session.idle") {
+          break;
+        }
+      }
     }
 
-    return response.data.parts
+    const response = await this.client.session.messages({
+      path: { id: this.sessionId },
+      throwOnError: true,
+    });
+    const message = [...response.data]
+      .reverse()
+      .find((message) => message.info.role === "assistant");
+
+    if (!message) {
+      throw new Error("No assistant message found");
+    }
+
+    if (message.info.role === "assistant" && message.info.error) {
+      throw new Error(message.info.error.name);
+    }
+
+    return message.parts
       .filter((part) => part.type === "text")
       .map((part) => part.text)
       .join("");
