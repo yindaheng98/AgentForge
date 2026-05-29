@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
-import type { RuntimeKind, RuntimeOptions, ThreadOptions } from "./types.js";
+import type { RuntimeKind, RuntimeOptions, ThreadOptions } from "./runtime/types.js";
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
   [P in K]: RuntimeOptions<P> extends never

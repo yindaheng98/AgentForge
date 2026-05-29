@@ -1,5 +1,5 @@
-export { loadConfig } from "./runtime/config.js";
-export type { Config, RuntimeDefinition, ThreadDefinition } from "./runtime/config.js";
+export { loadConfig } from "./config.js";
+export type { Config, RuntimeDefinition, ThreadDefinition } from "./config.js";
 export { createRuntime, startThread } from "./runtime/index.js";
 export { CodexRuntime, CodexThread } from "./runtime/codex.js";
 export { ClaudeRuntime, ClaudeThread } from "./runtime/claude.js";
