@@ -1,6 +1,6 @@
 import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
-import { ProviderCodingRuntime } from "./opencode.js";
+import { OpencodeRuntime } from "./opencode.js";
 import type { Config, RuntimeDefinition, ThreadDefinition } from "./config.js";
 import type { Runtime, Thread } from "./types.js";
 
@@ -11,7 +11,7 @@ export function createRuntime(runtime: RuntimeDefinition): Runtime<any> {
     case "claude":
       return new ClaudeRuntime();
     case "opencode":
-      return new ProviderCodingRuntime(runtime.options);
+      return new OpencodeRuntime(runtime.options);
   }
 }
 

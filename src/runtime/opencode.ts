@@ -10,10 +10,10 @@ import type {
   ThreadOptions,
 } from "./types.js";
 
-type OpenCode = Awaited<ReturnType<typeof createOpencode>>;
+type Opencode = Awaited<ReturnType<typeof createOpencode>>;
 
-export class ProviderCodingRuntime implements Runtime<"opencode"> {
-  readonly #opencode: Promise<OpenCode>;
+export class OpencodeRuntime implements Runtime<"opencode"> {
+  readonly #opencode: Promise<Opencode>;
 
   constructor(options?: RuntimeOptions<"opencode">) {
     this.#opencode = createOpencode(options);
@@ -26,11 +26,11 @@ export class ProviderCodingRuntime implements Runtime<"opencode"> {
       throwOnError: true,
     });
 
-    return new OpenCodeThread(opencode.client, session.data.id);
+    return new OpencodeThread(opencode.client, session.data.id);
   }
 }
 
-class OpenCodeThread implements Thread<"opencode"> {
+class OpencodeThread implements Thread<"opencode"> {
   constructor(
     private readonly client: OpencodeClient,
     private readonly sessionId: string,
@@ -60,7 +60,7 @@ class OpenCodeThread implements Thread<"opencode"> {
         await onRecord?.({ runtime: "opencode", event });
 
         if (event.type === "session.error") {
-          throw new Error(event.properties.error?.name ?? "OpenCode session error");
+          throw new Error(event.properties.error?.name ?? "Opencode session error");
         }
 
         if (event.type === "session.idle") {
