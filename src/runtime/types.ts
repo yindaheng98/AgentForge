@@ -32,8 +32,8 @@ export type Record<K extends RuntimeKind = RuntimeKind> = {
   codex: { runtime: "codex"; input: Input } | { runtime: "codex"; event: ThreadEvent };
   claude: { runtime: "claude"; message: SDKMessage };
   opencode:
-  | { runtime: "opencode"; request: string }
-  | { runtime: "opencode"; event: OpencodeEvent };
+    | { runtime: "opencode"; request: string }
+    | { runtime: "opencode"; event: OpencodeEvent };
 }[K];
 
 export interface Runtime<K extends RuntimeKind = RuntimeKind> {

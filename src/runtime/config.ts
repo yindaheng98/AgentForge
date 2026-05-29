@@ -4,8 +4,8 @@ import type { RuntimeKind, RuntimeOptions, ThreadOptions } from "./types.js";
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
   [P in K]: RuntimeOptions<P> extends never
-  ? { kind: P }
-  : { kind: P; options?: RuntimeOptions<P> };
+    ? { kind: P }
+    : { kind: P; options?: RuntimeOptions<P> };
 }[K];
 
 export type ThreadDefinition = {

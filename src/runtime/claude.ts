@@ -10,7 +10,7 @@ export class ClaudeRuntime implements Runtime<"claude"> {
 export class ClaudeThread implements Thread<"claude"> {
   #sessionId?: string;
 
-  constructor(private readonly options: ThreadOptions<"claude">) { }
+  constructor(private readonly options: ThreadOptions<"claude">) {}
 
   async runStreamed(prompt: string, onRecord?: RecordCallback<"claude">): Promise<string> {
     const options = { ...this.options };

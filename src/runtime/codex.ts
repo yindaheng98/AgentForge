@@ -15,7 +15,7 @@ export class CodexRuntime implements Runtime<"codex"> {
 }
 
 export class CodexThread implements Thread<"codex"> {
-  constructor(private readonly thread: CodexSdkThread) { }
+  constructor(private readonly thread: CodexSdkThread) {}
 
   async runStreamed(prompt: string, onRecord?: RecordCallback<"codex">): Promise<string> {
     await onRecord?.({ runtime: "codex", input: prompt });

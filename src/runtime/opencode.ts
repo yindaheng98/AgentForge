@@ -25,7 +25,7 @@ export class OpencodeThread implements Thread<"opencode"> {
   constructor(
     private readonly client: OpencodeClient,
     private readonly sessionId: string,
-  ) { }
+  ) {}
 
   async runStreamed(prompt: string, onRecord?: RecordCallback<"opencode">): Promise<string> {
     const request = {
