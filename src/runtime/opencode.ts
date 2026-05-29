@@ -30,7 +30,7 @@ export class OpencodeRuntime implements Runtime<"opencode"> {
   }
 }
 
-class OpencodeThread implements Thread<"opencode"> {
+export class OpencodeThread implements Thread<"opencode"> {
   constructor(
     private readonly client: OpencodeClient,
     private readonly sessionId: string,

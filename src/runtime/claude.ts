@@ -12,7 +12,7 @@ export class ClaudeRuntime implements Runtime<"claude"> {
   }
 }
 
-class ClaudeThread implements Thread<"claude"> {
+export class ClaudeThread implements Thread<"claude"> {
   #sessionId?: string;
 
   constructor(private readonly options: ThreadOptions<"claude">) { }
