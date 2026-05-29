@@ -29,5 +29,5 @@ const thread = await startThreadFromConfig(config, threadName);
 
 for (const prompt of prompts) {
   const response = await thread.runStreamed(prompt);
-  process.stdout.write(response);
+  process.stdout.write(`${response}\n`);
 }

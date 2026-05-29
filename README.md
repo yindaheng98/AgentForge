@@ -68,7 +68,7 @@ console.log(finalResponse);
 ## CLI
 
 ```bash
-npm run dev -- --config agent-forge.yaml --config secret.yaml --thread runner "Inspect this repo"
+npm run dev -- --config agent-forge.yaml --config secret.yaml --thread runner "Inspect this repo" "How to use this repo"
 ```
 
 Pass multiple `--config` files to merge them in order; object fields in later

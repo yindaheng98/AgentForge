@@ -25,6 +25,7 @@ threads:
     options:
       model: gpt-5.3-codex
       workingDirectory: .
+      sandboxMode: danger-full-access
 
   deepseek-runner:
     runtime: deepseek
