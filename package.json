@@ -2,6 +2,10 @@
   "name": "coding-agent-forge",
   "version": "0.1.1",
   "description": "A small runtime wrapper for Codex, Claude, Qwen Code, and opencode.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yindaheng98/CodingAgentForge"
+  },
   "type": "module",
   "engines": {
     "node": ">=20.19"
