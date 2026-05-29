@@ -1,8 +1,8 @@
 import { createOpencode, type OpencodeClient } from "@opencode-ai/sdk";
+import { BaseRuntime } from "./types.js";
 import type {
   Record as RuntimeRecord,
   RecordCallback,
-  Runtime,
   RuntimeOptions,
   Thread,
   ThreadOptions,
@@ -10,10 +10,11 @@ import type {
 
 type Opencode = Awaited<ReturnType<typeof createOpencode>>;
 
-export class OpencodeRuntime implements Runtime<"opencode"> {
+export class OpencodeRuntime extends BaseRuntime<"opencode"> {
   readonly #opencode: Promise<Opencode>;
 
   constructor(options?: RuntimeOptions<"opencode">) {
+    super();
     this.#opencode = createOpencode(options);
   }
 
@@ -25,6 +26,11 @@ export class OpencodeRuntime implements Runtime<"opencode"> {
     });
 
     return new OpencodeThread(opencode.client, session.data.id);
+  }
+
+  async close(): Promise<void> {
+    const opencode = await this.#opencode;
+    opencode.server.close();
   }
 }
 

@@ -3,19 +3,20 @@ import {
   type Thread as CodexSdkThread,
   type ThreadItem as CodexThreadItem,
 } from "@openai/codex-sdk";
+import { BaseRuntime } from "./types.js";
 import type {
   Record as RuntimeRecord,
   RecordCallback,
-  Runtime,
   RuntimeOptions,
   Thread,
   ThreadOptions,
 } from "./types.js";
 
-export class CodexRuntime implements Runtime<"codex"> {
+export class CodexRuntime extends BaseRuntime<"codex"> {
   readonly #codex: Codex;
 
   constructor(options?: RuntimeOptions<"codex">) {
+    super();
     this.#codex = new Codex(options);
   }
 

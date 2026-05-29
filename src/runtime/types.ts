@@ -49,6 +49,15 @@ export type Record<K extends RuntimeKind = RuntimeKind> = {
 
 export interface Runtime<K extends RuntimeKind = RuntimeKind> {
   startThread(options: ThreadOptions<K>): Promise<Thread<K>>;
+  close(): Promise<void>;
+}
+
+export abstract class BaseRuntime<K extends RuntimeKind = RuntimeKind> implements Runtime<K> {
+  abstract startThread(options: ThreadOptions<K>): Promise<Thread<K>>;
+
+  close(): Promise<void> {
+    return Promise.resolve();
+  }
 }
 
 export type RecordCallback<K extends RuntimeKind = RuntimeKind> = (

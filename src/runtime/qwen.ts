@@ -1,13 +1,13 @@
 import { query, type ContentBlock, type QueryOptions } from "@qwen-code/sdk";
+import { BaseRuntime } from "./types.js";
 import type {
   Record as RuntimeRecord,
   RecordCallback,
-  Runtime,
   Thread,
   ThreadOptions,
 } from "./types.js";
 
-export class QwenRuntime implements Runtime<"qwen"> {
+export class QwenRuntime extends BaseRuntime<"qwen"> {
   startThread(options: ThreadOptions<"qwen"> = {}): Promise<Thread<"qwen">> {
     return Promise.resolve(new QwenThread(options));
   }
