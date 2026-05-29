@@ -1,14 +1,9 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import type {
-  RecordCallback,
-  Runtime,
-  Thread,
-  ThreadOptions,
-} from "./types.js";
+import type { RecordCallback, Runtime, Thread, ThreadOptions } from "./types.js";
 
 export class ClaudeRuntime implements Runtime<"claude"> {
-  async startThread(options: ThreadOptions<"claude"> = {}): Promise<Thread<"claude">> {
-    return new ClaudeThread(options);
+  startThread(options: ThreadOptions<"claude"> = {}): Promise<Thread<"claude">> {
+    return Promise.resolve(new ClaudeThread(options));
   }
 }
 
@@ -35,7 +30,9 @@ export class ClaudeThread implements Thread<"claude"> {
     let finalResponse = "";
 
     for await (const message of stream) {
-      this.#sessionId = "session_id" in message ? message.session_id : this.#sessionId;
+      if ("session_id" in message && typeof message.session_id === "string") {
+        this.#sessionId = message.session_id;
+      }
       await onRecord?.({ runtime: "claude", message });
 
       if (message.type === "result") {

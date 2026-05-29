@@ -4,7 +4,7 @@ import { OpencodeRuntime } from "./opencode.js";
 import type { Config, RuntimeDefinition, ThreadDefinition } from "./config.js";
 import type { Runtime, Thread } from "./types.js";
 
-export function createRuntime(runtime: RuntimeDefinition): Runtime<any> {
+export function createRuntime(runtime: RuntimeDefinition): Runtime {
   switch (runtime.kind) {
     case "codex":
       return new CodexRuntime(runtime.options);
@@ -15,11 +15,11 @@ export function createRuntime(runtime: RuntimeDefinition): Runtime<any> {
   }
 }
 
-export function startThread(runtime: Runtime<any>, thread: ThreadDefinition): Promise<Thread<any>> {
+export function startThread(runtime: Runtime, thread: ThreadDefinition): Promise<Thread> {
   return runtime.startThread(thread.options ?? {});
 }
 
-export function startThreadFromConfig(config: Config, name: string): Promise<Thread<any>> {
+export function startThreadFromConfig(config: Config, name: string): Promise<Thread> {
   const thread = config.threads[name];
   if (!thread) {
     throw new Error(`Unknown thread: ${name}`);

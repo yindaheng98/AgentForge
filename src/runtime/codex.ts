@@ -1,11 +1,5 @@
 import { Codex, type Thread as CodexSdkThread } from "@openai/codex-sdk";
-import type {
-  RecordCallback,
-  Runtime,
-  RuntimeOptions,
-  Thread,
-  ThreadOptions,
-} from "./types.js";
+import type { RecordCallback, Runtime, RuntimeOptions, Thread, ThreadOptions } from "./types.js";
 
 export class CodexRuntime implements Runtime<"codex"> {
   readonly #codex: Codex;
@@ -14,9 +8,9 @@ export class CodexRuntime implements Runtime<"codex"> {
     this.#codex = new Codex(options);
   }
 
-  async startThread(options: ThreadOptions<"codex"> = {}): Promise<Thread<"codex">> {
+  startThread(options: ThreadOptions<"codex"> = {}): Promise<Thread<"codex">> {
     const thread = this.#codex.startThread(options);
-    return new CodexThread(thread);
+    return Promise.resolve(new CodexThread(thread));
   }
 }
 

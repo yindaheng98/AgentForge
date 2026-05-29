@@ -1,14 +1,5 @@
-import {
-  createOpencode,
-  type OpencodeClient,
-} from "@opencode-ai/sdk";
-import type {
-  RecordCallback,
-  Runtime,
-  RuntimeOptions,
-  Thread,
-  ThreadOptions,
-} from "./types.js";
+import { createOpencode, type OpencodeClient } from "@opencode-ai/sdk";
+import type { RecordCallback, Runtime, RuntimeOptions, Thread, ThreadOptions } from "./types.js";
 
 type Opencode = Awaited<ReturnType<typeof createOpencode>>;
 
