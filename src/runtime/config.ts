@@ -22,21 +22,60 @@ export type Config = {
   threads: Record<string, ThreadDefinition>;
 };
 
-export async function loadConfig(path: string): Promise<Config> {
-  const config = parse(await readFile(path, "utf8")) as Config;
-  if (!config?.runtimes || typeof config.runtimes !== "object") {
+function isPlainObject(value: unknown): value is Record<string, any> {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function mergeObjects(
+  base: Record<string, any>,
+  override: Record<string, any>,
+): Record<string, any> {
+  const merged = { ...base };
+
+  for (const [key, value] of Object.entries(override)) {
+    const existing = merged[key];
+    merged[key] = isPlainObject(existing) && isPlainObject(value)
+      ? mergeObjects(existing, value)
+      : value;
+  }
+
+  return merged;
+}
+
+export async function loadConfig(...paths: string[]): Promise<Config> {
+  if (paths.length === 0) {
+    throw new Error("loadConfig requires at least one path");
+  }
+
+  let config: Record<string, any> = {};
+  for (const path of paths) {
+    const nextConfig = parse(await readFile(path, "utf8")) as unknown;
+    if (!isPlainObject(nextConfig)) {
+      throw new Error(`Config file must contain an object: ${path}`);
+    }
+    config = mergeObjects(config, nextConfig);
+  }
+
+  if (!isPlainObject(config.runtimes)) {
     throw new Error("Config must define a runtimes object");
   }
-  if (!config.threads || typeof config.threads !== "object") {
+  if (!isPlainObject(config.threads)) {
     throw new Error("Config must define a threads object");
   }
   if (Object.keys(config.threads).length === 0) {
     throw new Error("Config must define at least one thread");
   }
-  for (const [name, thread] of Object.entries(config.threads)) {
+
+  for (const [name, thread] of Object.entries(config.threads) as Array<[string, ThreadDefinition]>) {
     if (!config.runtimes[thread.runtime]) {
       throw new Error(`Unknown runtime for thread ${name}: ${thread.runtime}`);
     }
   }
-  return config;
+
+  return config as Config;
 }
