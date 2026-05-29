@@ -8,12 +8,12 @@ runtimes:
   qwen:
     kind: qwen
 
-  deepseek:
+  opencode:
     kind: opencode
     options:
       config:
-        model: deepseek/deepseek-chat
-        small_model: deepseek/deepseek-chat
+        model: deepseek/deepseek-reasoner
+        small_model: deepseek/deepseek-reasoner
         enabled_providers:
           - deepseek
         provider:
@@ -21,17 +21,32 @@ runtimes:
             name: DeepSeek
             options:
               baseURL: https://api.deepseek.com
+            models:
+              deepseek-chat:
+                options:
+                  reasoningEffort: high
 
 threads:
-  runner:
+  codex-runner:
     runtime: codex
     options:
       model: gpt-5.3-codex
       workingDirectory: .
       sandboxMode: danger-full-access
 
-  deepseek-runner:
-    runtime: deepseek
+  opencode-runner:
+    runtime: opencode
     options:
       query:
         directory: .
+
+  qwen-runner:
+    runtime: qwen
+    options:
+      cwd: .
+      authType: openai
+      model: deepseek-reasoner
+      env:
+        OPENAI_BASE_URL: https://api.deepseek.com
+        OPENAI_MODEL: deepseek-reasoner
+        OPENAI_REASONING_EFFORT: high

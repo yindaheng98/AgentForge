@@ -73,7 +73,7 @@ await runtime.close();
 ## CLI
 
 ```bash
-npm run dev -- --config agent-forge.yaml --config secret.yaml --thread runner "Inspect this repo" "What did you just do? Is this a new conversation?"
+npm run dev -- --config agent-forge.yaml --config secret.yaml --thread codex-runner "Inspect this repo" "What did you just do? Is this a new conversation?"
 ```
 
 Pass multiple `--config` files to merge them in order; object fields in later
