@@ -20,7 +20,7 @@ export type Config = {
 
 type PlainObject = Record<string, unknown>;
 
-const runtimeKinds = new Set<RuntimeKind>(["codex", "claude", "opencode"]);
+const runtimeKinds = new Set<RuntimeKind>(["codex", "claude", "qwen", "opencode"]);
 
 function isPlainObject(value: unknown): value is PlainObject {
   if (typeof value !== "object" || value === null) {
@@ -76,7 +76,7 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
       throw new Error(`Runtime ${name} must be an object`);
     }
     if (!isRuntimeKind(runtime.kind)) {
-      throw new Error(`Runtime ${name} must use kind codex, claude, or opencode`);
+      throw new Error(`Runtime ${name} must use kind codex, claude, qwen, or opencode`);
     }
   }
 

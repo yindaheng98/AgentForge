@@ -1,19 +1,20 @@
 # agent-forge
 
 `agent-forge` is a small TypeScript runtime wrapper for coding agents. The
-lowest abstraction is `Runtime`, a thin wrapper around an existing
-coding-agent SDK.
+lowest abstraction is `Runtime`, a thin wrapper around an existing coding-agent
+SDK.
 
 ## Runtime kinds
 
 - `codex`: wraps `@openai/codex-sdk`
 - `claude`: wraps `@anthropic-ai/claude-agent-sdk`
+- `qwen`: wraps `@qwen-code/sdk`
 - `opencode`: wraps `@opencode-ai/sdk`
 
 The workflow layer gets records with a `runtime` marker added:
 `{ runtime: "codex", input }`, `{ runtime: "codex", event }`,
-`{ runtime: "claude", message }`, `{ runtime: "opencode", request }`, or
-`{ runtime: "opencode", event }`.
+`{ runtime: "claude", message }`, `{ runtime: "qwen", message }`,
+`{ runtime: "opencode", request }`, or `{ runtime: "opencode", event }`.
 
 ## Install
 

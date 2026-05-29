@@ -1,7 +1,7 @@
 {
   "name": "agent-forge",
   "version": "0.1.0",
-  "description": "A small runtime wrapper for Codex, Claude, and opencode.",
+  "description": "A small runtime wrapper for Codex, Claude, Qwen Code, and opencode.",
   "type": "module",
   "engines": {
     "node": ">=20.19"
@@ -33,7 +33,8 @@
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.154",
     "@openai/codex-sdk": "^0.134.0",
-    "@opencode-ai/sdk": "^1.15.11",
+    "@opencode-ai/sdk": "^1.15.12",
+    "@qwen-code/sdk": "^0.1.7",
     "opencode-ai": "^1.15.12",
     "yaml": "^2.8.2"
   },
