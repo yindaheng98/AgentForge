@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
-import type { AgentDefinition } from "./agent/index.js";
+import type { PromptConstants } from "./agent/agent.js";
+import type { AgentDefinition } from "./agent/config.js";
 import { isRuntimeKind, runtimeKinds } from "./runtime/index.js";
 import type {
   RuntimeKind,
@@ -28,7 +29,7 @@ type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
 
 type AgentDefinitions<Threads extends Record<string, unknown>> = Record<
   string,
-  AgentDefinition<keyof Threads & string>
+  AgentDefinition<PromptConstants, string, keyof Threads & string>
 >;
 
 export type Config<
@@ -158,12 +159,22 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
       throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
     }
 
-    if (!agent.options) {
+    if (!agent.constants) {
       agents[name] = { kind: agent.kind, thread: agent.thread };
-    } else if (!isPlainObject(agent.options)) {
-      throw new Error(`Agent ${name} options must be an object`);
     } else {
-      agents[name] = { kind: agent.kind, thread: agent.thread, options: agent.options };
+      if (!isPlainObject(agent.constants)) {
+        throw new Error(`Agent ${name} constants must be an object`);
+      }
+
+      const constants: PromptConstants = {};
+      for (const [entryKey, entryValue] of Object.entries(agent.constants)) {
+        if (typeof entryValue !== "string") {
+          throw new Error(`Agent ${name} constants.${entryKey} must be a string`);
+        }
+        constants[entryKey] = entryValue;
+      }
+
+      agents[name] = { kind: agent.kind, thread: agent.thread, constants };
     }
   }
 

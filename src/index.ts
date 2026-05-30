@@ -1,7 +1,15 @@
 export { defineConfig, loadConfig } from "./config.js";
 export type { Config } from "./config.js";
-export { Agent } from "./agent/index.js";
-export type { AgentInput } from "./agent/index.js";
+export { Agent, AgentTeam } from "./agent/index.js";
+export type {
+  AgentDefinition,
+  AgentFactory,
+  AgentFactoryContext,
+  AgentVariablesByName,
+  PromptConstants,
+  PromptVariables,
+  StringValuedObject,
+} from "./agent/index.js";
 export { createRuntime, startThread } from "./runtime/config.js";
 export type { RuntimeDefinition, ThreadDefinition } from "./runtime/config.js";
 export { CodexRuntime, CodexThread } from "./runtime/codex.js";
