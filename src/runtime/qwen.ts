@@ -1,5 +1,6 @@
 import { query, type ContentBlock } from "@qwen-code/sdk";
 import { BaseRuntime } from "./types.js";
+import { formatValue } from "./format.js";
 import { mergePlainObjects } from "../utils/object.js";
 import type {
   RecordCallback,
@@ -57,9 +58,6 @@ export class QwenThread implements Thread<"qwen"> {
   }
 
   recordToPrettyString(record: RuntimeRecord<"qwen">): string {
-    const formatValue = (value: unknown): string => {
-      return typeof value === "string" ? value : JSON.stringify(value, null, 2);
-    };
     const formatContentBlock = (block: ContentBlock): string => {
       switch (block.type) {
         case "text":

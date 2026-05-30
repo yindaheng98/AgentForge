@@ -1,5 +1,6 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { BaseRuntime } from "./types.js";
+import { formatValue } from "./format.js";
 import { mergePlainObjects } from "../utils/object.js";
 import type {
   RecordCallback,
@@ -60,9 +61,6 @@ export class ClaudeThread implements Thread<"claude"> {
   }
 
   recordToPrettyString(record: RuntimeRecord<"claude">): string {
-    const formatValue = (value: unknown): string => {
-      return typeof value === "string" ? value : JSON.stringify(value, null, 2);
-    };
     const { message } = record;
 
     switch (message.type) {

@@ -4,6 +4,7 @@ import {
   type ThreadItem as CodexThreadItem,
 } from "@openai/codex-sdk";
 import { BaseRuntime } from "./types.js";
+import { formatValue, previewText } from "./format.js";
 import type {
   RecordCallback,
   RuntimeRecord,
@@ -55,16 +56,6 @@ export class CodexThread implements Thread<"codex"> {
   }
 
   recordToPrettyString(record: RuntimeRecord<"codex">): string {
-    const formatValue = (value: unknown): string => {
-      return typeof value === "string" ? value : JSON.stringify(value, null, 2);
-    };
-    const previewText = (text: string, maxLength = 240): string => {
-      const trimmed = text.trim();
-      if (trimmed.length <= maxLength) {
-        return trimmed;
-      }
-      return `${trimmed.slice(0, maxLength - 3)}...`;
-    };
     const summarizeItem = (item: CodexThreadItem): string => {
       switch (item.type) {
         case "agent_message":

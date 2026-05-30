@@ -1,5 +1,6 @@
 import { createOpencode, type OpencodeClient } from "@opencode-ai/sdk";
 import { BaseRuntime } from "./types.js";
+import { formatValue } from "./format.js";
 import type {
   RecordCallback,
   RuntimeRecord,
@@ -96,9 +97,6 @@ export class OpencodeThread implements Thread<"opencode"> {
   }
 
   recordToPrettyString(record: RuntimeRecord<"opencode">): string {
-    const formatValue = (value: unknown): string => {
-      return typeof value === "string" ? value : JSON.stringify(value, null, 2);
-    };
     if ("request" in record) {
       return `[opencode] request\n${record.request}`;
     }
