@@ -1,11 +1,13 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
+import type { AgentDefinition } from "./agent/config.js";
 import type { RuntimeKind } from "./runtime/index.js";
 import type { RuntimeDefinition, ThreadDefinition } from "./runtime/config.js";
 
 export type Config = {
   runtimes: Record<string, RuntimeDefinition>;
   threads: Record<string, ThreadDefinition>;
+  agents: Record<string, AgentDefinition>;
 };
 
 type PlainObject = Record<string, unknown>;
@@ -60,6 +62,12 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
   if (Object.keys(config.threads).length === 0) {
     throw new Error("Config must define at least one thread");
   }
+  if (!isPlainObject(config.agents)) {
+    throw new Error("Config must define an agents object");
+  }
+  if (Object.keys(config.agents).length === 0) {
+    throw new Error("Config must define at least one agent");
+  }
 
   for (const [name, runtime] of Object.entries(config.runtimes)) {
     if (!isPlainObject(runtime)) {
@@ -79,6 +87,21 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
     }
     if (!config.runtimes[thread.runtime]) {
       throw new Error(`Unknown runtime for thread ${name}: ${thread.runtime}`);
+    }
+  }
+
+  for (const [name, agent] of Object.entries(config.agents)) {
+    if (!isPlainObject(agent)) {
+      throw new Error(`Agent ${name} must be an object`);
+    }
+    if (typeof agent.kind !== "string") {
+      throw new Error(`Agent ${name} must define a kind`);
+    }
+    if (typeof agent.thread !== "string") {
+      throw new Error(`Agent ${name} must define a thread`);
+    }
+    if (!config.threads[agent.thread]) {
+      throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
     }
   }
 
