@@ -21,6 +21,5 @@ export type {
   RuntimeDefinitions,
   RuntimeThreadDefinitions,
   ThreadDefinition,
-  ThreadDefinitionForRuntime,
   ThreadDefinitions,
 } from "./config.js";

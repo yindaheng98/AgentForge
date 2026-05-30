@@ -23,15 +23,6 @@ export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
   [P in K]: { kind: P; options?: RuntimeOptions<P> };
 }[K];
 
-export type ThreadDefinitionForKind<K extends RuntimeKind> = {
-  runtime: string;
-  options?: ThreadOptions<K>;
-};
-
-export type ThreadDefinition<K extends RuntimeKind = RuntimeKind> = {
-  [P in K]: ThreadDefinitionForKind<P>;
-}[K];
-
 export function createRuntime<K extends RuntimeKind>(runtime: RuntimeDefinition<K>): Runtime<K> {
   return runtimeFactoryMap[runtime.kind](runtime.options);
 }
@@ -71,7 +62,7 @@ export function loadRuntimeDefinitions(value: object): RuntimeDefinitions {
   return runtimes;
 }
 
-export type ThreadDefinitionForRuntime<
+export type ThreadDefinition<
   Runtimes extends RuntimeDefinitions,
   RuntimeName extends keyof Runtimes & string,
 > =
@@ -82,7 +73,7 @@ export type ThreadDefinitionForRuntime<
 export type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
   string,
   {
-    [RuntimeName in keyof Runtimes & string]: ThreadDefinitionForRuntime<Runtimes, RuntimeName>;
+    [RuntimeName in keyof Runtimes & string]: ThreadDefinition<Runtimes, RuntimeName>;
   }[keyof Runtimes & string]
 >;
 

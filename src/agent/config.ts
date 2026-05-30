@@ -1,4 +1,4 @@
-import type { RuntimeDefinitions, ThreadDefinition, ThreadDefinitions } from "../runtime/config.js";
+import type { RuntimeDefinitions, ThreadDefinitions } from "../runtime/config.js";
 import { isPlainObject } from "../utils/object.js";
 import type { PromptConstants } from "./agent.js";
 
@@ -20,12 +20,13 @@ export type AgentDefinitions<Threads extends Record<string, unknown>> = Record<
 export function loadAgentDefinitions(
   value: object,
   threads: ThreadDefinitions<RuntimeDefinitions>,
-): AgentDefinitions<Record<string, ThreadDefinition>> {
+): AgentDefinitions<Record<string, ThreadDefinitions<RuntimeDefinitions>[string]>> {
   if (Object.keys(value).length === 0) {
     throw new Error("Config must define at least one agent");
   }
 
-  const agents: AgentDefinitions<Record<string, ThreadDefinition>> = {};
+  const agents: AgentDefinitions<Record<string, ThreadDefinitions<RuntimeDefinitions>[string]>> =
+    {};
   for (const [name, agent] of Object.entries(value)) {
     if (!isPlainObject(agent)) {
       throw new Error(`Agent ${name} must be an object`);
