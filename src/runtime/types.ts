@@ -18,8 +18,8 @@ import type {
   ServerOptions as OpencodeSdkRuntimeOptions,
 } from "@opencode-ai/sdk";
 
-type ClaudeSdkRuntimeOptions = Record<string, unknown>;
-type QwenSdkRuntimeOptions = Record<string, unknown>;
+type ClaudeSdkRuntimeOptions = never;
+type QwenSdkRuntimeOptions = never;
 type OpencodeCreateOptions = Parameters<OpencodeClient["session"]["create"]>[0];
 type OpencodeSdkThreadOptions = Omit<OpencodeCreateOptions, "throwOnError">;
 
@@ -48,15 +48,18 @@ export type RuntimeSpec = {
   };
 };
 export type RuntimeKind = keyof RuntimeSpec;
-export const runtimeKinds = [
-  "codex",
-  "claude",
-  "qwen",
-  "opencode",
-] as const satisfies readonly RuntimeKind[];
+
+const runtimeKindMap = {
+  codex: true,
+  claude: true,
+  qwen: true,
+  opencode: true,
+} satisfies Record<RuntimeKind, true>;
+
+export const runtimeKinds = Object.keys(runtimeKindMap) as RuntimeKind[];
 
 export function isRuntimeKind(value: unknown): value is RuntimeKind {
-  return typeof value === "string" && (runtimeKinds as readonly string[]).includes(value);
+  return typeof value === "string" && Object.hasOwn(runtimeKindMap, value);
 }
 
 export type RuntimeOptions<K extends RuntimeKind = RuntimeKind> = RuntimeSpec[K]["runtimeOptions"];
