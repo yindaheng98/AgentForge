@@ -14,7 +14,7 @@ export type AgentFactoryMap = Record<string, AgentFactory>;
 export type AgentVariablesByName = Record<string, PromptVariables>;
 
 export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVariablesByName> {
-  readonly #agents = new Map<string, Promise<unknown>>();
+  readonly #agents = new Map<string, Promise<Agent>>();
   readonly #runtimes = new Map<string, Runtime>();
   readonly #threads = new Map<string, Promise<Thread>>();
 
@@ -80,14 +80,16 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
     // VariablesByName is a caller-provided type witness; factories are validated at runtime only by name.
     const cachedAgent = this.#agents.get(name);
     if (cachedAgent) {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Keep the caller-provided variable type visible at the boundary.
       return (await cachedAgent) as Agent<VariablesByName[Name]>;
     }
 
-    const agent: Promise<unknown> = this.createAgent(name).catch((error: unknown) => {
+    const agent = this.createAgent(name).catch((error: unknown) => {
       this.#agents.delete(name);
       throw error;
     });
     this.#agents.set(name, agent);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Keep the caller-provided variable type visible at the boundary.
     return (await agent) as Agent<VariablesByName[Name]>;
   }
 
