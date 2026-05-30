@@ -1,10 +1,20 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { BaseRuntime } from "./types.js";
-import type { RecordCallback, RuntimeRecord, Thread, ThreadOptions } from "./types.js";
+import type {
+  RecordCallback,
+  RuntimeOptions,
+  RuntimeRecord,
+  Thread,
+  ThreadOptions,
+} from "./types.js";
 
 export class ClaudeRuntime extends BaseRuntime<"claude"> {
+  constructor(private readonly options: RuntimeOptions<"claude"> = {}) {
+    super();
+  }
+
   startThread(options: ThreadOptions<"claude"> = {}): Promise<Thread<"claude">> {
-    return Promise.resolve(new ClaudeThread(options));
+    return Promise.resolve(new ClaudeThread({ ...this.options, ...options }));
   }
 }
 

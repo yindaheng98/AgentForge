@@ -18,8 +18,8 @@ import type {
   ServerOptions as OpencodeSdkRuntimeOptions,
 } from "@opencode-ai/sdk";
 
-type ClaudeSdkRuntimeOptions = never;
-type QwenSdkRuntimeOptions = never;
+type ClaudeSdkRuntimeOptions = ClaudeSdkThreadOptions;
+type QwenSdkRuntimeOptions = QwenSdkThreadOptions;
 type OpencodeCreateOptions = Parameters<OpencodeClient["session"]["create"]>[0];
 type OpencodeSdkThreadOptions = Omit<OpencodeCreateOptions, "throwOnError">;
 

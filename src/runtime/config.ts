@@ -14,8 +14,8 @@ type RuntimeFactoryMap = {
 
 const runtimeFactoryMap: RuntimeFactoryMap = {
   codex: (options) => new CodexRuntime(options),
-  claude: () => new ClaudeRuntime(),
-  qwen: () => new QwenRuntime(),
+  claude: (options) => new ClaudeRuntime(options),
+  qwen: (options) => new QwenRuntime(options),
   opencode: (options) => new OpencodeRuntime(options),
 };
 
@@ -58,12 +58,13 @@ export function loadRuntimeDefinitions(value: object): RuntimeDefinitions {
     if (!isRuntimeKind(runtime.kind)) {
       throw new Error(`Runtime ${name} must use kind ${runtimeKinds.join(", ")}`);
     }
-    if (!runtime.options) {
+
+    if (!Object.hasOwn(runtime, "options") || runtime.options === undefined) {
       runtimes[name] = { kind: runtime.kind };
     } else if (!isPlainObject(runtime.options)) {
       throw new Error(`Runtime ${name} options must be an object`);
     } else {
-      runtimes[name] = { kind: runtime.kind, options: runtime.options } as RuntimeDefinition;
+      runtimes[name] = { kind: runtime.kind, options: runtime.options };
     }
   }
 
@@ -105,7 +106,7 @@ export function loadThreadDefinitions(
       throw new Error(`Unknown runtime for thread ${name}: ${thread.runtime}`);
     }
 
-    if (!thread.options) {
+    if (!Object.hasOwn(thread, "options") || thread.options === undefined) {
       threads[name] = { runtime: thread.runtime };
     } else if (!isPlainObject(thread.options)) {
       throw new Error(`Thread ${name} options must be an object`);

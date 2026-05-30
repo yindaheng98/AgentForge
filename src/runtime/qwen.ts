@@ -1,17 +1,27 @@
-import { query, type ContentBlock, type QueryOptions } from "@qwen-code/sdk";
+import { query, type ContentBlock } from "@qwen-code/sdk";
 import { BaseRuntime } from "./types.js";
-import type { RecordCallback, RuntimeRecord, Thread, ThreadOptions } from "./types.js";
+import type {
+  RecordCallback,
+  RuntimeOptions,
+  RuntimeRecord,
+  Thread,
+  ThreadOptions,
+} from "./types.js";
 
 export class QwenRuntime extends BaseRuntime<"qwen"> {
+  constructor(private readonly options: RuntimeOptions<"qwen"> = {}) {
+    super();
+  }
+
   startThread(options: ThreadOptions<"qwen"> = {}): Promise<Thread<"qwen">> {
-    return Promise.resolve(new QwenThread(options));
+    return Promise.resolve(new QwenThread({ ...this.options, ...options }));
   }
 }
 
 export class QwenThread implements Thread<"qwen"> {
   #sessionId?: string;
 
-  constructor(private readonly options: QueryOptions) {}
+  constructor(private readonly options: ThreadOptions<"qwen">) {}
 
   async runStreamed(prompt: string, onRecord?: RecordCallback<"qwen">): Promise<string> {
     const options = { ...this.options };
