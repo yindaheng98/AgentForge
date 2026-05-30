@@ -12,12 +12,12 @@ type RuntimeFactoryMap = {
   [K in RuntimeKind]: RuntimeFactory<K>;
 };
 
-const runtimeFactoryMap = {
+const runtimeFactoryMap: RuntimeFactoryMap = {
   codex: (options) => new CodexRuntime(options),
   claude: () => new ClaudeRuntime(),
   qwen: () => new QwenRuntime(),
   opencode: (options) => new OpencodeRuntime(options),
-} satisfies RuntimeFactoryMap;
+};
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
   [P in K]: { kind: P; options?: RuntimeOptions<P> };
@@ -33,8 +33,7 @@ export type ThreadDefinition<K extends RuntimeKind = RuntimeKind> = {
 }[K];
 
 export function createRuntime<K extends RuntimeKind>(runtime: RuntimeDefinition<K>): Runtime<K> {
-  const factories: RuntimeFactoryMap = runtimeFactoryMap;
-  return factories[runtime.kind](runtime.options);
+  return runtimeFactoryMap[runtime.kind](runtime.options);
 }
 
 export function startThread<K extends RuntimeKind>(
