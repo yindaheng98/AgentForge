@@ -12,7 +12,6 @@ export { isRuntimeKind, runtimeKinds } from "./types.js";
 export {
   createRuntime,
   loadRuntimeDefinitions,
-  loadRuntimeThreadConfig,
   loadThreadDefinitions,
   startThread,
 } from "./config.js";
