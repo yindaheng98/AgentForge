@@ -3,9 +3,10 @@ import type { RecordCallback, Thread } from "../runtime/index.js";
 export type PromptConstants = Record<string, string>;
 export type PromptVariables = Record<string, string>;
 
+export type StringValues<T extends object> = { [K in keyof T]: string };
 export abstract class Agent<
-  Variables extends PromptVariables = PromptVariables,
-  Constants extends PromptConstants = PromptConstants,
+  Variables extends StringValues<Variables> = PromptVariables,
+  Constants extends StringValues<Constants> = PromptConstants,
 > {
   readonly #constants: Readonly<Constants>;
 
