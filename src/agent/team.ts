@@ -6,7 +6,7 @@ import type { AgentDefinition, AgentFactory } from "./config.js";
 
 export type AgentVariablesByName = Record<string, PromptVariables>;
 
-type AgentTeamDefinition = {
+export type AgentTeamDefinition = {
   runtimes: Record<string, RuntimeDefinition>;
   threads: Record<string, ThreadDefinition>;
   agents: Record<string, AgentDefinition>;
@@ -19,7 +19,7 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
 
   constructor(
     private readonly config: AgentTeamDefinition,
-    private readonly agentFactories: Record<string, AgentFactory> = {},
+    private readonly factory: AgentFactory,
   ) {}
 
   private getRuntime(name: string): Runtime {
@@ -64,18 +64,8 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
       throw new Error(`Unknown agent: ${name}`);
     }
 
-    const factory = this.agentFactories[agentDefinition.kind];
-    if (!factory) {
-      throw new Error(`Unknown agent kind for ${name}: ${agentDefinition.kind}`);
-    }
-
     const constants: PromptConstants = agentDefinition.constants ?? {};
-    return factory({
-      name,
-      thread: await this.getThread(agentDefinition.thread),
-      constants,
-      definition: agentDefinition,
-    });
+    return this.factory(name, await this.getThread(agentDefinition.thread), constants);
   }
 
   async getAgent<Name extends keyof VariablesByName & string>(
@@ -104,6 +94,11 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
   }
 
   async close(): Promise<void> {
-    await Promise.all([...this.#runtimes.values()].map((runtime) => runtime.close()));
+    const runtimes = [...this.#runtimes.values()];
+    this.#agents.clear();
+    this.#threads.clear();
+    this.#runtimes.clear();
+
+    await Promise.all(runtimes.map((runtime) => runtime.close()));
   }
 }
