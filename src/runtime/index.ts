@@ -8,5 +8,6 @@ export type {
   RuntimeRecord,
   RecordCallback,
 } from "./types.js";
+export { isRuntimeKind, runtimeKinds } from "./types.js";
 export { createRuntime, startThread } from "./config.js";
 export type { RuntimeDefinition, ThreadDefinition } from "./config.js";
