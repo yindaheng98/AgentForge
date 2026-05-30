@@ -1,12 +1,22 @@
 import type { Thread } from "../runtime/index.js";
 import type { RuntimeDefinitions, ThreadDefinition, ThreadDefinitions } from "../runtime/config.js";
 import { isPlainObject } from "../utils/object.js";
-import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
+import type { Agent, PromptConstants } from "./agent.js";
+
+export type AgentFactory = (
+  name: string,
+  thread: Thread,
+  constants: Readonly<PromptConstants>,
+) => Agent;
+
+export type AgentFactoryMap = Record<string, AgentFactory>;
 
 export type AgentDefinition<
   Constants extends PromptConstants = PromptConstants,
   ThreadName extends string = string,
+  Kind extends string = string,
 > = {
+  kind: Kind;
   thread: ThreadName;
   constants?: Constants;
 };
@@ -29,6 +39,9 @@ export function loadAgentDefinitions(
     if (!isPlainObject(agent)) {
       throw new Error(`Agent ${name} must be an object`);
     }
+    if (typeof agent.kind !== "string") {
+      throw new Error(`Agent ${name} must define a kind`);
+    }
     if (typeof agent.thread !== "string") {
       throw new Error(`Agent ${name} must define a thread`);
     }
@@ -36,8 +49,8 @@ export function loadAgentDefinitions(
       throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
     }
 
-    if (!agent.constants) {
-      agents[name] = { thread: agent.thread };
+    if (!Object.hasOwn(agent, "constants") || agent.constants === undefined) {
+      agents[name] = { kind: agent.kind, thread: agent.thread };
     } else {
       if (!isPlainObject(agent.constants)) {
         throw new Error(`Agent ${name} constants must be an object`);
@@ -51,7 +64,7 @@ export function loadAgentDefinitions(
         constants[entryKey] = entryValue;
       }
 
-      agents[name] = { thread: agent.thread, constants };
+      agents[name] = { kind: agent.kind, thread: agent.thread, constants };
     }
   }
 
@@ -67,8 +80,3 @@ export type AgentTeamDefinition<
   threads: Threads;
   agents: Agents;
 };
-
-export type AgentFactory<
-  Variables extends PromptVariables = PromptVariables,
-  Constants extends PromptConstants = PromptConstants,
-> = (name: string, thread: Thread, constants: Readonly<Constants>) => Agent<Variables, Constants>;
