@@ -37,7 +37,7 @@ if (!runtimeDefinition) {
 const runtime = createRuntime(runtimeDefinition);
 
 try {
-  const thread = await startThread(runtime, threadDefinition);
+  const thread = await startThread(runtime, threadDefinition.options);
 
   for (const prompt of prompts) {
     const response = await thread.runStreamed(prompt);

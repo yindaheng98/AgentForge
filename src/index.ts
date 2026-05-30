@@ -1,4 +1,4 @@
-export { loadConfig } from "./config.js";
+export { defineConfig, loadConfig } from "./config.js";
 export type { Config } from "./config.js";
 export { Agent } from "./agent/index.js";
 export type { AgentInput } from "./agent/index.js";
@@ -10,11 +10,11 @@ export { QwenRuntime, QwenThread } from "./runtime/qwen.js";
 export { OpencodeRuntime, OpencodeThread } from "./runtime/opencode.js";
 export type {
   RuntimeKind,
+  RuntimeSpec,
   Runtime,
   RuntimeOptions,
-  BaseRuntime,
   Thread,
   ThreadOptions,
-  Record,
+  RuntimeRecord,
   RecordCallback,
 } from "./runtime/index.js";
