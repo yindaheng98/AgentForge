@@ -1,4 +1,5 @@
 export { defineConfig, loadConfig } from "./config.js";
+export type { Config } from "./config.js";
 export { Agent, AgentTeam } from "./agent/index.js";
 export type {
   AgentDefinition,
