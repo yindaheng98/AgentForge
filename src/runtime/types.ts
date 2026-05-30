@@ -20,7 +20,7 @@ import type {
 
 type ClaudeSdkRuntimeOptions = ClaudeSdkThreadOptions;
 type QwenSdkRuntimeOptions = QwenSdkThreadOptions;
-type OpencodeCreateOptions = Parameters<OpencodeClient["session"]["create"]>[0];
+type OpencodeCreateOptions = NonNullable<Parameters<OpencodeClient["session"]["create"]>[0]>;
 type OpencodeSdkThreadOptions = Omit<OpencodeCreateOptions, "throwOnError">;
 
 export type RuntimeSpec = {
