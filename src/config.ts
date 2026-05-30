@@ -1,8 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
-import type { AgentDefinition } from "./agent/config.js";
-import type { RuntimeKind } from "./runtime/index.js";
-import type { RuntimeDefinition, ThreadDefinition } from "./runtime/config.js";
+import type { AgentDefinition } from "./agent/index.js";
+import type { RuntimeKind, RuntimeDefinition, ThreadDefinition } from "./runtime/index.js";
 
 export type Config = {
   runtimes: Record<string, RuntimeDefinition>;
