@@ -1,5 +1,21 @@
-import { getRuntimeFactory } from "./factories.js";
+import { ClaudeRuntime } from "./claude.js";
+import { CodexRuntime } from "./codex.js";
+import { OpencodeRuntime } from "./opencode.js";
+import { QwenRuntime } from "./qwen.js";
 import type { Runtime, RuntimeKind, RuntimeOptions, Thread, ThreadOptions } from "./types.js";
+
+type RuntimeFactory<K extends RuntimeKind> = (options?: RuntimeOptions<K>) => Runtime<K>;
+
+type RuntimeFactoryMap = {
+  [K in RuntimeKind]: RuntimeFactory<K>;
+};
+
+const runtimeFactories: RuntimeFactoryMap = {
+  codex: (options) => new CodexRuntime(options),
+  claude: () => new ClaudeRuntime(),
+  qwen: () => new QwenRuntime(),
+  opencode: (options) => new OpencodeRuntime(options),
+} satisfies RuntimeFactoryMap;
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
   [P in K]: { kind: P; options?: RuntimeOptions<P> };
@@ -15,7 +31,7 @@ export type ThreadDefinition<K extends RuntimeKind = RuntimeKind> = {
 }[K];
 
 export function createRuntime<K extends RuntimeKind>(runtime: RuntimeDefinition<K>): Runtime<K> {
-  return getRuntimeFactory(runtime.kind)(runtime.options);
+  return runtimeFactories[runtime.kind](runtime.options);
 }
 
 export function startThread<K extends RuntimeKind>(
