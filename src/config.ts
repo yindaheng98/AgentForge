@@ -1,37 +1,15 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
 import type { PromptConstants } from "./agent/agent.js";
-import type { AgentDefinition } from "./agent/config.js";
-import type { AgentTeamDefinition } from "./agent/team.js";
-import { isRuntimeKind, runtimeKinds } from "./runtime/index.js";
 import type {
-  RuntimeKind,
-  RuntimeDefinition,
-  ThreadDefinition,
-  ThreadOptions,
-} from "./runtime/index.js";
-
-type RuntimeDefinitions = Record<string, RuntimeDefinition>;
-
-type ThreadDefinitionForRuntime<
-  Runtimes extends RuntimeDefinitions,
-  RuntimeName extends keyof Runtimes & string,
-> =
-  Runtimes[RuntimeName] extends RuntimeDefinition<infer K extends RuntimeKind>
-    ? { runtime: RuntimeName; options?: ThreadOptions<K> }
-    : never;
-
-type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
-  string,
-  {
-    [RuntimeName in keyof Runtimes & string]: ThreadDefinitionForRuntime<Runtimes, RuntimeName>;
-  }[keyof Runtimes & string]
->;
-
-type AgentDefinitions<Threads extends Record<string, unknown>> = Record<
-  string,
-  AgentDefinition<PromptConstants, keyof Threads & string>
->;
+  AgentDefinition,
+  AgentDefinitions,
+  AgentTeamDefinition,
+  RuntimeDefinitions,
+  ThreadDefinitions,
+} from "./agent/config.js";
+import { isRuntimeKind, runtimeKinds } from "./runtime/index.js";
+import type { RuntimeDefinition, ThreadDefinition } from "./runtime/index.js";
 
 type PlainObject = Record<string, unknown>;
 

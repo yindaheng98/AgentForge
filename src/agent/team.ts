@@ -1,16 +1,9 @@
 import { createRuntime, startThread } from "../runtime/config.js";
-import type { RuntimeDefinition, ThreadDefinition } from "../runtime/config.js";
 import type { RecordCallback, Runtime, Thread } from "../runtime/index.js";
 import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
-import type { AgentDefinition, AgentFactory } from "./config.js";
+import type { AgentFactory, AgentTeamDefinition } from "./config.js";
 
 export type AgentVariablesByName = Record<string, PromptVariables>;
-
-export type AgentTeamDefinition = {
-  runtimes: Record<string, RuntimeDefinition>;
-  threads: Record<string, ThreadDefinition>;
-  agents: Record<string, AgentDefinition>;
-};
 
 export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVariablesByName> {
   readonly #agents = new Map<string, Promise<Agent>>();
