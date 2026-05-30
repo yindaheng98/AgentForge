@@ -5,8 +5,8 @@ import {
 } from "@openai/codex-sdk";
 import { BaseRuntime } from "./types.js";
 import type {
-  Record as RuntimeRecord,
   RecordCallback,
+  RuntimeRecord,
   RuntimeOptions,
   Thread,
   ThreadOptions,

@@ -1,11 +1,11 @@
 export type {
   RuntimeKind,
+  RuntimeSpec,
   Runtime,
   RuntimeOptions,
-  BaseRuntime,
   Thread,
   ThreadOptions,
-  Record,
+  RuntimeRecord,
   RecordCallback,
 } from "./types.js";
 export { getRuntimeFactory } from "./factories.js";

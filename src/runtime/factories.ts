@@ -15,7 +15,7 @@ const runtimeFactories: RuntimeFactoryMap = {
   claude: () => new ClaudeRuntime(),
   qwen: () => new QwenRuntime(),
   opencode: (options) => new OpencodeRuntime(options),
-};
+} satisfies RuntimeFactoryMap;
 
 export function getRuntimeFactory<K extends RuntimeKind>(kind: K): RuntimeFactory<K> {
   return runtimeFactories[kind];

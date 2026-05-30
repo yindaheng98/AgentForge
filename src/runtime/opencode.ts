@@ -1,8 +1,8 @@
 import { createOpencode, type OpencodeClient } from "@opencode-ai/sdk";
 import { BaseRuntime } from "./types.js";
 import type {
-  Record as RuntimeRecord,
   RecordCallback,
+  RuntimeRecord,
   RuntimeOptions,
   Thread,
   ThreadOptions,

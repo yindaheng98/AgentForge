@@ -22,38 +22,42 @@ type ClaudeSdkRuntimeOptions = never;
 type QwenSdkRuntimeOptions = never;
 type OpencodeSdkThreadOptions = Parameters<OpencodeClient["session"]["create"]>[0];
 
-export type RuntimeKind = "codex" | "claude" | "qwen" | "opencode";
-
-export type RuntimeOptions<K extends RuntimeKind = RuntimeKind> = {
-  codex: CodexSdkRuntimeOptions;
-  claude: ClaudeSdkRuntimeOptions;
-  qwen: QwenSdkRuntimeOptions;
-  opencode: OpencodeSdkRuntimeOptions;
-}[K];
-
-export type ThreadOptions<K extends RuntimeKind = RuntimeKind> = {
-  codex: CodexSdkThreadOptions;
-  claude: ClaudeSdkThreadOptions;
-  qwen: QwenSdkThreadOptions;
-  opencode: OpencodeSdkThreadOptions;
-}[K];
-
-export type Record<K extends RuntimeKind = RuntimeKind> = {
-  codex: { runtime: "codex"; input: Input } | { runtime: "codex"; event: ThreadEvent };
-  claude: { runtime: "claude"; message: ClaudeSDKMessage };
-  qwen: { runtime: "qwen"; message: QwenSdkMessage };
-  opencode:
-    | { runtime: "opencode"; request: string }
-    | { runtime: "opencode"; event: OpencodeEvent };
-}[K];
+export type RuntimeSpec = {
+  codex: {
+    runtimeOptions: CodexSdkRuntimeOptions;
+    threadOptions: CodexSdkThreadOptions;
+    record: { runtime: "codex"; input: Input } | { runtime: "codex"; event: ThreadEvent };
+  };
+  claude: {
+    runtimeOptions: ClaudeSdkRuntimeOptions;
+    threadOptions: ClaudeSdkThreadOptions;
+    record: { runtime: "claude"; message: ClaudeSDKMessage };
+  };
+  qwen: {
+    runtimeOptions: QwenSdkRuntimeOptions;
+    threadOptions: QwenSdkThreadOptions;
+    record: { runtime: "qwen"; message: QwenSdkMessage };
+  };
+  opencode: {
+    runtimeOptions: OpencodeSdkRuntimeOptions;
+    threadOptions: OpencodeSdkThreadOptions;
+    record:
+      | { runtime: "opencode"; request: string }
+      | { runtime: "opencode"; event: OpencodeEvent };
+  };
+};
+export type RuntimeKind = keyof RuntimeSpec;
+export type RuntimeOptions<K extends RuntimeKind = RuntimeKind> = RuntimeSpec[K]["runtimeOptions"];
+export type ThreadOptions<K extends RuntimeKind = RuntimeKind> = RuntimeSpec[K]["threadOptions"];
+export type RuntimeRecord<K extends RuntimeKind = RuntimeKind> = RuntimeSpec[K]["record"];
 
 export interface Runtime<K extends RuntimeKind = RuntimeKind> {
-  startThread(options: ThreadOptions<K>): Promise<Thread<K>>;
+  startThread(options?: ThreadOptions<K>): Promise<Thread<K>>;
   close(): Promise<void>;
 }
 
 export abstract class BaseRuntime<K extends RuntimeKind = RuntimeKind> implements Runtime<K> {
-  abstract startThread(options: ThreadOptions<K>): Promise<Thread<K>>;
+  abstract startThread(options?: ThreadOptions<K>): Promise<Thread<K>>;
 
   close(): Promise<void> {
     return Promise.resolve();
@@ -61,10 +65,10 @@ export abstract class BaseRuntime<K extends RuntimeKind = RuntimeKind> implement
 }
 
 export type RecordCallback<K extends RuntimeKind = RuntimeKind> = (
-  record: Record<K>,
+  record: RuntimeRecord<K>,
 ) => void | Promise<void>;
 
 export interface Thread<K extends RuntimeKind = RuntimeKind> {
-  recordToPrettyString(record: Record<K>): string;
+  recordToPrettyString(record: RuntimeRecord<K>): string;
   runStreamed(prompt: string, onRecord?: RecordCallback<K>): Promise<string>;
 }
