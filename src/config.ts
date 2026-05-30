@@ -23,16 +23,8 @@ export function defineConfig<
   const Threads extends ThreadDefinitions<Runtimes>,
   const Agents extends AgentDefinitions<Threads>,
 >(
-  config: AgentTeamDefinition & {
-    runtimes: Runtimes;
-    threads: Threads;
-    agents: Agents;
-  },
-): AgentTeamDefinition & {
-  runtimes: Runtimes;
-  threads: Threads;
-  agents: Agents;
-} {
+  config: AgentTeamDefinition<Runtimes, Threads, Agents>,
+): AgentTeamDefinition<Runtimes, Threads, Agents> {
   return config;
 }
 
