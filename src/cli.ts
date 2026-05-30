@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
-import { createRuntime, loadConfig, startThread } from "./index.js";
+import { loadConfig } from "./config.js";
+import { createRuntime, startThread } from "./runtime/config.js";
 import type { RecordCallback } from "./index.js";
 
 const { values, positionals: prompts } = parseArgs({
@@ -12,7 +13,7 @@ const { values, positionals: prompts } = parseArgs({
   allowPositionals: true,
 });
 
-const configPaths = values.config ?? [];
+const configPaths = values.config && values.config.length > 0 ? values.config : ["agent-forge.yaml"];
 
 if (prompts.length === 0) {
   console.error(
@@ -21,7 +22,7 @@ if (prompts.length === 0) {
   process.exit(1);
 }
 
-const config = await loadConfig(...(configPaths.length > 0 ? configPaths : ["agent-forge.yaml"]));
+const config = await loadConfig(...configPaths);
 const [defaultThreadName = ""] = Object.keys(config.threads);
 const threadName = values.thread ?? defaultThreadName;
 
