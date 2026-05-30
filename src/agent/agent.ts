@@ -8,8 +8,8 @@ export type StringValuedObject<T extends object> = {
 };
 
 export abstract class Agent<
-  Constants extends object & StringValuedObject<Constants> = PromptConstants,
   Variables extends object & StringValuedObject<Variables> = PromptVariables,
+  Constants extends object & StringValuedObject<Constants> = PromptConstants,
 > {
   constructor(
     protected readonly thread: Thread,
@@ -17,12 +17,12 @@ export abstract class Agent<
   ) {}
 
   protected abstract buildPrompt(
-    constants: Readonly<Constants>,
     variables: Readonly<Variables>,
+    constants: Readonly<Constants>,
   ): string;
 
   runStreamed(variables: Variables, onRecord?: RecordCallback): Promise<string> {
-    const prompt = this.buildPrompt(this.constants, variables);
+    const prompt = this.buildPrompt(variables, this.constants);
     return this.thread.runStreamed(prompt, onRecord);
   }
 }
