@@ -3,20 +3,8 @@ import { parse } from "yaml";
 import type { AgentDefinitions, AgentTeamDefinition } from "./agent/config.js";
 import { loadAgentDefinitions } from "./agent/config.js";
 import type { RuntimeDefinitions, ThreadDefinitions } from "./runtime/config.js";
-import { loadRuntimeDefinitions, loadThreadDefinitions } from "./runtime/config.js";
-import { isPlainObject, type PlainObject } from "./utils/object.js";
-
-function mergeObjects(base: PlainObject, override: PlainObject): PlainObject {
-  const merged = { ...base };
-
-  for (const [key, value] of Object.entries(override)) {
-    const existing = merged[key];
-    merged[key] =
-      isPlainObject(existing) && isPlainObject(value) ? mergeObjects(existing, value) : value;
-  }
-
-  return merged;
-}
+import { loadRuntimeThreadDefinitions } from "./runtime/config.js";
+import { isPlainObject, mergePlainObjects, type PlainObject } from "./utils/object.js";
 
 export function defineConfig<
   const Runtimes extends RuntimeDefinitions,
@@ -39,21 +27,14 @@ export async function loadConfig(...paths: string[]): Promise<AgentTeamDefinitio
     if (!isPlainObject(nextConfig)) {
       throw new Error(`Config file must contain an object: ${path}`);
     }
-    config = mergeObjects(config, nextConfig);
+    config = mergePlainObjects(config, nextConfig);
   }
 
-  if (!isPlainObject(config.runtimes)) {
-    throw new Error("Config must define a runtimes object");
-  }
-  if (!isPlainObject(config.threads)) {
-    throw new Error("Config must define a threads object");
-  }
   if (!isPlainObject(config.agents)) {
     throw new Error("Config must define an agents object");
   }
 
-  const runtimes = loadRuntimeDefinitions(config.runtimes);
-  const threads = loadThreadDefinitions(config.threads, runtimes);
+  const { runtimes, threads } = loadRuntimeThreadDefinitions(config);
   const agents = loadAgentDefinitions(config.agents, threads);
 
   return { runtimes, threads, agents };

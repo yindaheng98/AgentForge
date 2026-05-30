@@ -2,7 +2,7 @@ import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
 import { OpencodeRuntime } from "./opencode.js";
 import { QwenRuntime } from "./qwen.js";
-import { isPlainObject } from "../utils/object.js";
+import { isPlainObject, type PlainObject } from "../utils/object.js";
 import { isRuntimeKind, runtimeKinds } from "./types.js";
 import type { Runtime, RuntimeKind, RuntimeOptions, Thread, ThreadOptions } from "./types.js";
 
@@ -116,4 +116,26 @@ export function loadThreadDefinitions(
   }
 
   return threads;
+}
+
+export type RuntimeThreadDefinitions<
+  Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
+  Threads extends ThreadDefinitions<Runtimes> = ThreadDefinitions<Runtimes>,
+> = {
+  runtimes: Runtimes;
+  threads: Threads;
+};
+
+export function loadRuntimeThreadDefinitions(config: PlainObject): RuntimeThreadDefinitions {
+  if (!isPlainObject(config.runtimes)) {
+    throw new Error("Config must define a runtimes object");
+  }
+  if (!isPlainObject(config.threads)) {
+    throw new Error("Config must define a threads object");
+  }
+
+  const runtimes = loadRuntimeDefinitions(config.runtimes);
+  const threads = loadThreadDefinitions(config.threads, runtimes);
+
+  return { runtimes, threads };
 }
