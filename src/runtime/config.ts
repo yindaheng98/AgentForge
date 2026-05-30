@@ -108,7 +108,7 @@ export function loadThreadDefinitions(
   return threads;
 }
 
-export type RuntimeThreadDefinitions<
+export type RuntimeThreadConfig<
   Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
   Threads extends ThreadDefinitions<Runtimes> = ThreadDefinitions<Runtimes>,
 > = {
@@ -116,7 +116,7 @@ export type RuntimeThreadDefinitions<
   threads: Threads;
 };
 
-export function loadRuntimeThreadDefinitions(config: PlainObject): RuntimeThreadDefinitions {
+export function loadRuntimeThreadConfig(config: PlainObject): RuntimeThreadConfig {
   if (!isPlainObject(config.runtimes)) {
     throw new Error("Config must define a runtimes object");
   }
