@@ -92,7 +92,7 @@ export function loadThreadDefinitions(
     if (typeof thread.runtime !== "string") {
       throw new Error(`Thread ${name} must define a runtime`);
     }
-    if (!runtimes[thread.runtime]) {
+    if (!Object.hasOwn(runtimes, thread.runtime)) {
       throw new Error(`Unknown runtime for thread ${name}: ${thread.runtime}`);
     }
 
