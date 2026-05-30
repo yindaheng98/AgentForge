@@ -1,4 +1,8 @@
-import type { RuntimeDefinitions, ThreadDefinitions } from "../runtime/config.js";
+import type {
+  RuntimeDefinitions,
+  RuntimeThreadConfig,
+  ThreadDefinitions,
+} from "../runtime/config.js";
 import { loadRuntimeThreadConfig } from "../runtime/config.js";
 import { isPlainObject, type PlainObject } from "../utils/object.js";
 import type { PromptConstants } from "./agent.js";
@@ -65,19 +69,17 @@ export function loadAgentDefinitions(
   return agents;
 }
 
-export type AgentTeamDefinition<
+export type RuntimeThreadAgentConfig<
   Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
   Threads extends ThreadDefinitions<Runtimes> = ThreadDefinitions<Runtimes>,
   Agents extends AgentDefinitions<keyof Threads & string> = AgentDefinitions<
     keyof Threads & string
   >,
-> = {
-  runtimes: Runtimes;
-  threads: Threads;
+> = RuntimeThreadConfig<Runtimes, Threads> & {
   agents: Agents;
 };
 
-export function loadAgentTeamDefinitions(config: PlainObject): AgentTeamDefinition {
+export function loadRuntimeThreadAgentConfig(config: PlainObject): RuntimeThreadAgentConfig {
   if (!isPlainObject(config.agents)) {
     throw new Error("Config must define an agents object");
   }

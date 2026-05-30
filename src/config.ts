@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
-import type { AgentDefinitions, AgentTeamDefinition } from "./agent/config.js";
-import { loadAgentTeamDefinitions } from "./agent/config.js";
+import type { AgentDefinitions, RuntimeThreadAgentConfig } from "./agent/config.js";
+import { loadRuntimeThreadAgentConfig } from "./agent/config.js";
 import type { RuntimeDefinitions, ThreadDefinitions } from "./runtime/config.js";
 import { isPlainObject, mergePlainObjects, type PlainObject } from "./utils/object.js";
 
@@ -10,12 +10,12 @@ export function defineConfig<
   const Threads extends ThreadDefinitions<Runtimes>,
   const Agents extends AgentDefinitions<keyof Threads & string>,
 >(
-  config: AgentTeamDefinition<Runtimes, Threads, Agents>,
-): AgentTeamDefinition<Runtimes, Threads, Agents> {
+  config: RuntimeThreadAgentConfig<Runtimes, Threads, Agents>,
+): RuntimeThreadAgentConfig<Runtimes, Threads, Agents> {
   return config;
 }
 
-export async function loadConfig(...paths: string[]): Promise<AgentTeamDefinition> {
+export async function loadConfig(...paths: string[]): Promise<RuntimeThreadAgentConfig> {
   if (paths.length === 0) {
     throw new Error("loadConfig requires at least one path");
   }
@@ -29,5 +29,5 @@ export async function loadConfig(...paths: string[]): Promise<AgentTeamDefinitio
     config = mergePlainObjects(config, nextConfig);
   }
 
-  return loadAgentTeamDefinitions(config);
+  return loadRuntimeThreadAgentConfig(config);
 }
