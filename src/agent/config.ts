@@ -1,15 +1,6 @@
-import type { Thread } from "../runtime/index.js";
 import type { RuntimeDefinitions, ThreadDefinition, ThreadDefinitions } from "../runtime/config.js";
 import { isPlainObject } from "../utils/object.js";
-import type { Agent, PromptConstants } from "./agent.js";
-
-export type AgentFactory = (
-  name: string,
-  thread: Thread,
-  constants: Readonly<PromptConstants>,
-) => Agent;
-
-export type AgentFactoryMap = Record<string, AgentFactory>;
+import type { PromptConstants } from "./agent.js";
 
 export type AgentDefinition<
   Constants extends PromptConstants = PromptConstants,

@@ -1,7 +1,15 @@
 import { createRuntime, startThread } from "../runtime/config.js";
 import type { RecordCallback, Runtime, Thread } from "../runtime/index.js";
 import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
-import type { AgentFactory, AgentTeamDefinition } from "./config.js";
+import type { AgentTeamDefinition } from "./config.js";
+
+export type AgentFactory = (
+  name: string,
+  thread: Thread,
+  constants: Readonly<PromptConstants>,
+) => Agent;
+
+export type AgentFactoryMap = Record<string, AgentFactory>;
 
 export type AgentVariablesByName = Record<string, PromptVariables>;
 
@@ -12,7 +20,7 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
 
   constructor(
     private readonly config: AgentTeamDefinition,
-    private readonly factory: AgentFactory,
+    private readonly factories: AgentFactoryMap,
   ) {}
 
   private getRuntime(name: string): Runtime {
@@ -58,7 +66,12 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
     }
 
     const constants: PromptConstants = agentDefinition.constants ?? {};
-    return this.factory(name, await this.getThread(agentDefinition.thread), constants);
+    const factory = this.factories[agentDefinition.kind];
+    if (!factory) {
+      throw new Error(`Unknown agent kind for ${name}: ${agentDefinition.kind}`);
+    }
+
+    return factory(name, await this.getThread(agentDefinition.thread), constants);
   }
 
   async getAgent<Name extends keyof VariablesByName & string>(
