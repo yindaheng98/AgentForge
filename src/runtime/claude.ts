@@ -1,5 +1,6 @@
 import { query } from "@anthropic-ai/claude-agent-sdk";
 import { BaseRuntime } from "./types.js";
+import { mergePlainObjects } from "../utils/object.js";
 import type {
   RecordCallback,
   RuntimeOptions,
@@ -14,7 +15,7 @@ export class ClaudeRuntime extends BaseRuntime<"claude"> {
   }
 
   startThread(options: ThreadOptions<"claude"> = {}): Promise<Thread<"claude">> {
-    return Promise.resolve(new ClaudeThread({ ...this.options, ...options }));
+    return Promise.resolve(new ClaudeThread(mergePlainObjects(this.options, options)));
   }
 }
 
