@@ -1,5 +1,10 @@
 export function formatValue(value: unknown): string {
-  return typeof value === "string" ? value : JSON.stringify(value, null, 2);
+  if (typeof value === "string") {
+    return value;
+  }
+
+  const serialized = JSON.stringify(value, null, 2) as string | undefined;
+  return serialized ?? String(value);
 }
 
 export function previewText(text: string, maxLength = 240): string {
