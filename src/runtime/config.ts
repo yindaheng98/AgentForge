@@ -63,29 +63,28 @@ export function loadRuntimeDefinitions(value: object): RuntimeDefinitions {
 }
 
 export type ThreadDefinition<
-  Runtimes extends RuntimeDefinitions,
-  RuntimeName extends keyof Runtimes & string,
-> =
-  Runtimes[RuntimeName] extends RuntimeDefinition<infer K extends RuntimeKind>
-    ? { runtime: RuntimeName; options?: ThreadOptions<K> }
+  Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
+  RuntimeName extends keyof Runtimes & string = keyof Runtimes & string,
+> = {
+  [Name in RuntimeName]: Runtimes[Name] extends RuntimeDefinition<infer K extends RuntimeKind>
+    ? { runtime: Name; options?: ThreadOptions<K> }
     : never;
+}[RuntimeName];
 
-export type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
+export type ThreadDefinitions<Runtimes extends RuntimeDefinitions = RuntimeDefinitions> = Record<
   string,
-  {
-    [RuntimeName in keyof Runtimes & string]: ThreadDefinition<Runtimes, RuntimeName>;
-  }[keyof Runtimes & string]
+  ThreadDefinition<Runtimes>
 >;
 
 export function loadThreadDefinitions(
   value: object,
   runtimes: RuntimeDefinitions,
-): ThreadDefinitions<RuntimeDefinitions> {
+): ThreadDefinitions {
   if (Object.keys(value).length === 0) {
     throw new Error("Config must define at least one thread");
   }
 
-  const threads: ThreadDefinitions<RuntimeDefinitions> = {};
+  const threads: ThreadDefinitions = {};
   for (const [name, thread] of Object.entries(value)) {
     if (!isPlainObject(thread)) {
       throw new Error(`Thread ${name} must be an object`);

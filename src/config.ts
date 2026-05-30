@@ -9,7 +9,7 @@ import { isPlainObject, mergePlainObjects, type PlainObject } from "./utils/obje
 export function defineConfig<
   const Runtimes extends RuntimeDefinitions,
   const Threads extends ThreadDefinitions<Runtimes>,
-  const Agents extends AgentDefinitions<Threads>,
+  const Agents extends AgentDefinitions<keyof Threads & string>,
 >(
   config: AgentTeamDefinition<Runtimes, Threads, Agents>,
 ): AgentTeamDefinition<Runtimes, Threads, Agents> {

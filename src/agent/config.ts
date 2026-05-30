@@ -12,21 +12,20 @@ export type AgentDefinition<
   constants?: Constants;
 };
 
-export type AgentDefinitions<Threads extends Record<string, unknown>> = Record<
+export type AgentDefinitions<ThreadName extends string = string> = Record<
   string,
-  AgentDefinition<PromptConstants, keyof Threads & string>
+  AgentDefinition<PromptConstants, ThreadName>
 >;
 
 export function loadAgentDefinitions(
   value: object,
-  threads: ThreadDefinitions<RuntimeDefinitions>,
-): AgentDefinitions<Record<string, ThreadDefinitions<RuntimeDefinitions>[string]>> {
+  threads: Record<string, unknown>,
+): AgentDefinitions {
   if (Object.keys(value).length === 0) {
     throw new Error("Config must define at least one agent");
   }
 
-  const agents: AgentDefinitions<Record<string, ThreadDefinitions<RuntimeDefinitions>[string]>> =
-    {};
+  const agents: AgentDefinitions = {};
   for (const [name, agent] of Object.entries(value)) {
     if (!isPlainObject(agent)) {
       throw new Error(`Agent ${name} must be an object`);
@@ -37,7 +36,7 @@ export function loadAgentDefinitions(
     if (typeof agent.thread !== "string") {
       throw new Error(`Agent ${name} must define a thread`);
     }
-    if (!threads[agent.thread]) {
+    if (!Object.hasOwn(threads, agent.thread)) {
       throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
     }
 
@@ -66,7 +65,9 @@ export function loadAgentDefinitions(
 export type AgentTeamDefinition<
   Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
   Threads extends ThreadDefinitions<Runtimes> = ThreadDefinitions<Runtimes>,
-  Agents extends AgentDefinitions<Threads> = AgentDefinitions<Threads>,
+  Agents extends AgentDefinitions<keyof Threads & string> = AgentDefinitions<
+    keyof Threads & string
+  >,
 > = {
   runtimes: Runtimes;
   threads: Threads;
