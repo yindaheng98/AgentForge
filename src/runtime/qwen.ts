@@ -1,7 +1,6 @@
 import { query, type ContentBlock } from "@qwen-code/sdk";
 import { BaseRuntime } from "./types.js";
-import { formatValue } from "./format.js";
-import { mergePlainObjects } from "../utils/object.js";
+import { formatValue, mergePlainObjectOptions } from "./format.js";
 import type {
   RecordCallback,
   RuntimeOptions,
@@ -16,7 +15,7 @@ export class QwenRuntime extends BaseRuntime<"qwen"> {
   }
 
   startThread(options: ThreadOptions<"qwen"> = {}): Promise<Thread<"qwen">> {
-    return Promise.resolve(new QwenThread(mergePlainObjects(this.options, options)));
+    return Promise.resolve(new QwenThread(mergePlainObjectOptions(this.options, options)));
   }
 }
 

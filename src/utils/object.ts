@@ -9,17 +9,14 @@ export function isPlainObject(value: unknown): value is PlainObject {
   return prototype === Object.prototype || prototype === null;
 }
 
-export function mergePlainObjects<Base extends object, Override extends object>(
-  base: Base,
-  override: Override,
-): Base & Override {
-  const merged: Record<string, unknown> = { ...(base as Record<string, unknown>) };
+export function mergePlainObjects(base: PlainObject, override: PlainObject): PlainObject {
+  const merged: PlainObject = { ...base };
 
-  for (const [key, value] of Object.entries(override as Record<string, unknown>)) {
+  for (const [key, value] of Object.entries(override)) {
     const existing = merged[key];
     merged[key] =
       isPlainObject(existing) && isPlainObject(value) ? mergePlainObjects(existing, value) : value;
   }
 
-  return merged as Base & Override;
+  return merged;
 }
