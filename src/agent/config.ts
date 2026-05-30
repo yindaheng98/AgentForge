@@ -41,23 +41,25 @@ export function loadAgentDefinitions(
       throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
     }
 
-    if (!Object.hasOwn(agent, "constants") || agent.constants === undefined) {
-      agents[name] = { kind: agent.kind, thread: agent.thread };
-    } else {
+    let constants: PromptConstants | undefined;
+    if (agent.constants !== undefined) {
       if (!isPlainObject(agent.constants)) {
         throw new Error(`Agent ${name} constants must be an object`);
       }
 
-      const constants: PromptConstants = {};
+      constants = {};
       for (const [entryKey, entryValue] of Object.entries(agent.constants)) {
         if (typeof entryValue !== "string") {
           throw new Error(`Agent ${name} constants.${entryKey} must be a string`);
         }
         constants[entryKey] = entryValue;
       }
-
-      agents[name] = { kind: agent.kind, thread: agent.thread, constants };
     }
+
+    agents[name] =
+      constants === undefined
+        ? { kind: agent.kind, thread: agent.thread }
+        : { kind: agent.kind, thread: agent.thread, constants };
   }
 
   return agents;

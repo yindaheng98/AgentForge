@@ -50,13 +50,13 @@ export function loadRuntimeDefinitions(value: object): RuntimeDefinitions {
       throw new Error(`Runtime ${name} must use kind ${runtimeKinds.join(", ")}`);
     }
 
-    if (!Object.hasOwn(runtime, "options") || runtime.options === undefined) {
-      runtimes[name] = { kind: runtime.kind };
-    } else if (!isPlainObject(runtime.options)) {
+    const options = runtime.options;
+    if (options !== undefined && !isPlainObject(options)) {
       throw new Error(`Runtime ${name} options must be an object`);
-    } else {
-      runtimes[name] = { kind: runtime.kind, options: runtime.options };
     }
+
+    runtimes[name] =
+      options === undefined ? { kind: runtime.kind } : { kind: runtime.kind, options };
   }
 
   return runtimes;
@@ -96,13 +96,13 @@ export function loadThreadDefinitions(
       throw new Error(`Unknown runtime for thread ${name}: ${thread.runtime}`);
     }
 
-    if (!Object.hasOwn(thread, "options") || thread.options === undefined) {
-      threads[name] = { runtime: thread.runtime };
-    } else if (!isPlainObject(thread.options)) {
+    const options = thread.options;
+    if (options !== undefined && !isPlainObject(options)) {
       throw new Error(`Thread ${name} options must be an object`);
-    } else {
-      threads[name] = { runtime: thread.runtime, options: thread.options };
     }
+
+    threads[name] =
+      options === undefined ? { runtime: thread.runtime } : { runtime: thread.runtime, options };
   }
 
   return threads;
