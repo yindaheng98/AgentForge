@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { parse } from "yaml";
 import type { PromptConstants } from "./agent/agent.js";
 import type { AgentDefinition } from "./agent/config.js";
+import type { AgentTeamDefinition } from "./agent/team.js";
 import { isRuntimeKind, runtimeKinds } from "./runtime/index.js";
 import type {
   RuntimeKind,
@@ -29,18 +30,8 @@ type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
 
 type AgentDefinitions<Threads extends Record<string, unknown>> = Record<
   string,
-  AgentDefinition<PromptConstants, string, keyof Threads & string>
+  AgentDefinition<PromptConstants, keyof Threads & string>
 >;
-
-export type Config<
-  Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
-  Threads extends ThreadDefinitions<Runtimes> = ThreadDefinitions<Runtimes>,
-  Agents extends AgentDefinitions<Threads> = AgentDefinitions<Threads>,
-> = {
-  runtimes: Runtimes;
-  threads: Threads;
-  agents: Agents;
-};
 
 type PlainObject = Record<string, unknown>;
 
@@ -69,11 +60,21 @@ export function defineConfig<
   const Runtimes extends RuntimeDefinitions,
   const Threads extends ThreadDefinitions<Runtimes>,
   const Agents extends AgentDefinitions<Threads>,
->(config: Config<Runtimes, Threads, Agents>): Config<Runtimes, Threads, Agents> {
+>(
+  config: AgentTeamDefinition & {
+    runtimes: Runtimes;
+    threads: Threads;
+    agents: Agents;
+  },
+): AgentTeamDefinition & {
+  runtimes: Runtimes;
+  threads: Threads;
+  agents: Agents;
+} {
   return config;
 }
 
-export async function loadConfig(...paths: string[]): Promise<Config> {
+export async function loadConfig(...paths: string[]): Promise<AgentTeamDefinition> {
   if (paths.length === 0) {
     throw new Error("loadConfig requires at least one path");
   }
@@ -119,7 +120,7 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
     } else if (!isPlainObject(runtime.options)) {
       throw new Error(`Runtime ${name} options must be an object`);
     } else {
-      runtimes[name] = { kind: runtime.kind, options: runtime.options };
+      runtimes[name] = { kind: runtime.kind, options: runtime.options } as RuntimeDefinition;
     }
   }
 
@@ -149,9 +150,6 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
     if (!isPlainObject(agent)) {
       throw new Error(`Agent ${name} must be an object`);
     }
-    if (typeof agent.kind !== "string") {
-      throw new Error(`Agent ${name} must define a kind`);
-    }
     if (typeof agent.thread !== "string") {
       throw new Error(`Agent ${name} must define a thread`);
     }
@@ -160,7 +158,7 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
     }
 
     if (!agent.constants) {
-      agents[name] = { kind: agent.kind, thread: agent.thread };
+      agents[name] = { thread: agent.thread };
     } else {
       if (!isPlainObject(agent.constants)) {
         throw new Error(`Agent ${name} constants must be an object`);
@@ -174,7 +172,7 @@ export async function loadConfig(...paths: string[]): Promise<Config> {
         constants[entryKey] = entryValue;
       }
 
-      agents[name] = { kind: agent.kind, thread: agent.thread, constants };
+      agents[name] = { thread: agent.thread, constants };
     }
   }
 
