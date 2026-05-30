@@ -2,6 +2,8 @@ import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
 import { OpencodeRuntime } from "./opencode.js";
 import { QwenRuntime } from "./qwen.js";
+import { isPlainObject } from "../utils/object.js";
+import { isRuntimeKind, runtimeKinds } from "./types.js";
 import type { Runtime, RuntimeKind, RuntimeOptions, Thread, ThreadOptions } from "./types.js";
 
 type RuntimeFactory<K extends RuntimeKind> = (options?: RuntimeOptions<K>) => Runtime<K>;
@@ -40,4 +42,78 @@ export function startThread<K extends RuntimeKind>(
   options?: ThreadOptions<K>,
 ): Promise<Thread<K>> {
   return runtime.startThread(options);
+}
+
+export type RuntimeDefinitions = Record<string, RuntimeDefinition>;
+
+export function loadRuntimeDefinitions(value: object): RuntimeDefinitions {
+  if (Object.keys(value).length === 0) {
+    throw new Error("Config must define at least one runtime");
+  }
+
+  const runtimes: RuntimeDefinitions = {};
+  for (const [name, runtime] of Object.entries(value)) {
+    if (!isPlainObject(runtime)) {
+      throw new Error(`Runtime ${name} must be an object`);
+    }
+    if (!isRuntimeKind(runtime.kind)) {
+      throw new Error(`Runtime ${name} must use kind ${runtimeKinds.join(", ")}`);
+    }
+    if (!runtime.options) {
+      runtimes[name] = { kind: runtime.kind };
+    } else if (!isPlainObject(runtime.options)) {
+      throw new Error(`Runtime ${name} options must be an object`);
+    } else {
+      runtimes[name] = { kind: runtime.kind, options: runtime.options } as RuntimeDefinition;
+    }
+  }
+
+  return runtimes;
+}
+
+export type ThreadDefinitionForRuntime<
+  Runtimes extends RuntimeDefinitions,
+  RuntimeName extends keyof Runtimes & string,
+> =
+  Runtimes[RuntimeName] extends RuntimeDefinition<infer K extends RuntimeKind>
+    ? { runtime: RuntimeName; options?: ThreadOptions<K> }
+    : never;
+
+export type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
+  string,
+  {
+    [RuntimeName in keyof Runtimes & string]: ThreadDefinitionForRuntime<Runtimes, RuntimeName>;
+  }[keyof Runtimes & string]
+>;
+
+export function loadThreadDefinitions(
+  value: object,
+  runtimes: RuntimeDefinitions,
+): ThreadDefinitions<RuntimeDefinitions> {
+  if (Object.keys(value).length === 0) {
+    throw new Error("Config must define at least one thread");
+  }
+
+  const threads: ThreadDefinitions<RuntimeDefinitions> = {};
+  for (const [name, thread] of Object.entries(value)) {
+    if (!isPlainObject(thread)) {
+      throw new Error(`Thread ${name} must be an object`);
+    }
+    if (typeof thread.runtime !== "string") {
+      throw new Error(`Thread ${name} must define a runtime`);
+    }
+    if (!runtimes[thread.runtime]) {
+      throw new Error(`Unknown runtime for thread ${name}: ${thread.runtime}`);
+    }
+
+    if (!thread.options) {
+      threads[name] = { runtime: thread.runtime };
+    } else if (!isPlainObject(thread.options)) {
+      throw new Error(`Thread ${name} options must be an object`);
+    } else {
+      threads[name] = { runtime: thread.runtime, options: thread.options };
+    }
+  }
+
+  return threads;
 }

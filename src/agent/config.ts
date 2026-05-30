@@ -1,23 +1,7 @@
 import type { Thread } from "../runtime/index.js";
-import type { RuntimeKind, RuntimeDefinition, ThreadOptions } from "../runtime/index.js";
+import type { RuntimeDefinitions, ThreadDefinition, ThreadDefinitions } from "../runtime/config.js";
+import { isPlainObject } from "../utils/object.js";
 import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
-
-export type RuntimeDefinitions = Record<string, RuntimeDefinition>;
-
-export type ThreadDefinitionForRuntime<
-  Runtimes extends RuntimeDefinitions,
-  RuntimeName extends keyof Runtimes & string,
-> =
-  Runtimes[RuntimeName] extends RuntimeDefinition<infer K extends RuntimeKind>
-    ? { runtime: RuntimeName; options?: ThreadOptions<K> }
-    : never;
-
-export type ThreadDefinitions<Runtimes extends RuntimeDefinitions> = Record<
-  string,
-  {
-    [RuntimeName in keyof Runtimes & string]: ThreadDefinitionForRuntime<Runtimes, RuntimeName>;
-  }[keyof Runtimes & string]
->;
 
 export type AgentDefinition<
   Constants extends PromptConstants = PromptConstants,
@@ -31,6 +15,48 @@ export type AgentDefinitions<Threads extends Record<string, unknown>> = Record<
   string,
   AgentDefinition<PromptConstants, keyof Threads & string>
 >;
+
+export function loadAgentDefinitions(
+  value: object,
+  threads: ThreadDefinitions<RuntimeDefinitions>,
+): AgentDefinitions<Record<string, ThreadDefinition>> {
+  if (Object.keys(value).length === 0) {
+    throw new Error("Config must define at least one agent");
+  }
+
+  const agents: AgentDefinitions<Record<string, ThreadDefinition>> = {};
+  for (const [name, agent] of Object.entries(value)) {
+    if (!isPlainObject(agent)) {
+      throw new Error(`Agent ${name} must be an object`);
+    }
+    if (typeof agent.thread !== "string") {
+      throw new Error(`Agent ${name} must define a thread`);
+    }
+    if (!threads[agent.thread]) {
+      throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
+    }
+
+    if (!agent.constants) {
+      agents[name] = { thread: agent.thread };
+    } else {
+      if (!isPlainObject(agent.constants)) {
+        throw new Error(`Agent ${name} constants must be an object`);
+      }
+
+      const constants: PromptConstants = {};
+      for (const [entryKey, entryValue] of Object.entries(agent.constants)) {
+        if (typeof entryValue !== "string") {
+          throw new Error(`Agent ${name} constants.${entryKey} must be a string`);
+        }
+        constants[entryKey] = entryValue;
+      }
+
+      agents[name] = { thread: agent.thread, constants };
+    }
+  }
+
+  return agents;
+}
 
 export type AgentTeamDefinition<
   Runtimes extends RuntimeDefinitions = RuntimeDefinitions,
