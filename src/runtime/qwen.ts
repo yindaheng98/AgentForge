@@ -92,6 +92,8 @@ export class QwenThread implements Thread<"qwen"> {
         return `[qwen] result error (${message.subtype})\n${message.error?.message ?? ""}`;
       case "stream_event":
         return `[qwen] stream event ${message.event.type}`;
+      default:
+        return `[qwen] ${formatValue(message)}`;
     }
   }
 }
