@@ -13,12 +13,7 @@ export class ClaudeThread implements Thread<"claude"> {
 
   constructor(private readonly options: ThreadOptions<"claude">) {}
 
-  async runStreamed(
-    prompt: string,
-    onRecord: RecordCallback<"claude"> = (record) => {
-      process.stdout.write(`${this.recordToPrettyString(record)}\n`);
-    },
-  ): Promise<string> {
+  async runStreamed(prompt: string, onRecord?: RecordCallback<"claude">): Promise<string> {
     const options = { ...this.options };
 
     if (this.#sessionId) {
@@ -39,7 +34,7 @@ export class ClaudeThread implements Thread<"claude"> {
       if ("session_id" in message && typeof message.session_id === "string") {
         this.#sessionId = message.session_id;
       }
-      await onRecord({ runtime: "claude", message });
+      await onRecord?.({ runtime: "claude", message });
 
       if (message.type === "result") {
         if (message.subtype === "success") {

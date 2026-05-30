@@ -13,12 +13,7 @@ export class QwenThread implements Thread<"qwen"> {
 
   constructor(private readonly options: QueryOptions) {}
 
-  async runStreamed(
-    prompt: string,
-    onRecord: RecordCallback<"qwen"> = (record) => {
-      process.stdout.write(`${this.recordToPrettyString(record)}\n`);
-    },
-  ): Promise<string> {
+  async runStreamed(prompt: string, onRecord?: RecordCallback<"qwen">): Promise<string> {
     const options = { ...this.options };
 
     if (this.#sessionId) {
@@ -36,7 +31,7 @@ export class QwenThread implements Thread<"qwen"> {
       if ("session_id" in message && typeof message.session_id === "string") {
         this.#sessionId = message.session_id;
       }
-      await onRecord({ runtime: "qwen", message });
+      await onRecord?.({ runtime: "qwen", message });
 
       if (message.type === "result") {
         if (!message.is_error) {

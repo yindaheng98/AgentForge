@@ -40,12 +40,7 @@ export class OpencodeThread implements Thread<"opencode"> {
     private readonly sessionId: string,
   ) {}
 
-  async runStreamed(
-    prompt: string,
-    onRecord: RecordCallback<"opencode"> = (record) => {
-      process.stdout.write(`${this.recordToPrettyString(record)}\n`);
-    },
-  ): Promise<string> {
+  async runStreamed(prompt: string, onRecord?: RecordCallback<"opencode">): Promise<string> {
     const request = {
       path: { id: this.sessionId },
       body: {
@@ -53,7 +48,7 @@ export class OpencodeThread implements Thread<"opencode"> {
       },
     };
 
-    await onRecord({ runtime: "opencode", request: prompt });
+    await onRecord?.({ runtime: "opencode", request: prompt });
 
     const { stream } = await this.client.event.subscribe({
       throwOnError: true,
@@ -66,7 +61,7 @@ export class OpencodeThread implements Thread<"opencode"> {
 
     for await (const event of stream) {
       if ("sessionID" in event.properties && event.properties.sessionID === this.sessionId) {
-        await onRecord({ runtime: "opencode", event });
+        await onRecord?.({ runtime: "opencode", event });
 
         if (event.type === "session.error") {
           throw new Error(event.properties.error?.name ?? "Opencode session error");

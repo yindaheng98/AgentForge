@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { createRuntime, loadConfig, startThread } from "./index.js";
+import type { RecordCallback } from "./index.js";
 
 const { values, positionals: prompts } = parseArgs({
   args: process.argv.slice(2),
@@ -38,9 +39,12 @@ const runtime = createRuntime(runtimeDefinition);
 
 try {
   const thread = await startThread(runtime, threadDefinition.options);
+  const logRecord: RecordCallback = (record) => {
+    process.stderr.write(`${thread.recordToPrettyString(record)}\n`);
+  };
 
   for (const prompt of prompts) {
-    const response = await thread.runStreamed(prompt);
+    const response = await thread.runStreamed(prompt, logRecord);
     process.stdout.write(`${response}\n`);
   }
 } finally {

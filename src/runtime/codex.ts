@@ -29,19 +29,14 @@ export class CodexRuntime extends BaseRuntime<"codex"> {
 export class CodexThread implements Thread<"codex"> {
   constructor(private readonly thread: CodexSdkThread) {}
 
-  async runStreamed(
-    prompt: string,
-    onRecord: RecordCallback<"codex"> = (record) => {
-      process.stdout.write(`${this.recordToPrettyString(record)}\n`);
-    },
-  ): Promise<string> {
-    await onRecord({ runtime: "codex", input: prompt });
+  async runStreamed(prompt: string, onRecord?: RecordCallback<"codex">): Promise<string> {
+    await onRecord?.({ runtime: "codex", input: prompt });
 
     const { events } = await this.thread.runStreamed(prompt);
     let finalResponse = "";
 
     for await (const event of events) {
-      await onRecord({ runtime: "codex", event });
+      await onRecord?.({ runtime: "codex", event });
 
       if (event.type === "item.completed" && event.item.type === "agent_message") {
         finalResponse = event.item.text;
