@@ -14,7 +14,7 @@ export type AgentFactoryMap = Record<string, AgentFactory>;
 export type AgentVariablesByName = Record<string, PromptVariables>;
 
 export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVariablesByName> {
-  readonly #agents = new Map<string, Promise<Agent>>();
+  readonly #agents = new Map<string, Promise<unknown>>();
   readonly #runtimes = new Map<string, Runtime>();
   readonly #threads = new Map<string, Promise<Thread>>();
 
@@ -77,17 +77,18 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
   async getAgent<Name extends keyof VariablesByName & string>(
     name: Name,
   ): Promise<Agent<VariablesByName[Name]>> {
+    // VariablesByName is a caller-provided type witness; factories are validated at runtime only by name.
     const cachedAgent = this.#agents.get(name);
     if (cachedAgent) {
-      return await cachedAgent;
+      return (await cachedAgent) as Agent<VariablesByName[Name]>;
     }
 
-    const agent = this.createAgent(name).catch((error: unknown) => {
+    const agent: Promise<unknown> = this.createAgent(name).catch((error: unknown) => {
       this.#agents.delete(name);
       throw error;
     });
     this.#agents.set(name, agent);
-    return await agent;
+    return (await agent) as Agent<VariablesByName[Name]>;
   }
 
   async runStreamed<Name extends keyof VariablesByName & string>(
