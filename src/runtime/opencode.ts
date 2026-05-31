@@ -49,7 +49,7 @@ export class OpencodeThread implements Thread<"opencode"> {
       },
     };
 
-    await onRecord?.({ runtime: "opencode", request: prompt });
+    await onRecord?.(this, { runtime: "opencode", request: prompt });
 
     const { stream } = await this.client.event.subscribe({
       throwOnError: true,
@@ -62,7 +62,7 @@ export class OpencodeThread implements Thread<"opencode"> {
 
     for await (const event of stream) {
       if ("sessionID" in event.properties && event.properties.sessionID === this.sessionId) {
-        await onRecord?.({ runtime: "opencode", event });
+        await onRecord?.(this, { runtime: "opencode", event });
 
         if (event.type === "session.error") {
           throw new Error(event.properties.error?.name ?? "Opencode session error");

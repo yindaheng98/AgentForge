@@ -45,7 +45,7 @@ export class ClaudeThread implements Thread<"claude"> {
       if ("session_id" in message && typeof message.session_id === "string") {
         this.#sessionId = message.session_id;
       }
-      await onRecord?.({ runtime: "claude", message });
+      await onRecord?.(this, { runtime: "claude", message });
 
       if (message.type === "result") {
         if (message.subtype === "success") {

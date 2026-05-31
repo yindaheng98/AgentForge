@@ -42,7 +42,7 @@ export class QwenThread implements Thread<"qwen"> {
       if ("session_id" in message && typeof message.session_id === "string") {
         this.#sessionId = message.session_id;
       }
-      await onRecord?.({ runtime: "qwen", message });
+      await onRecord?.(this, { runtime: "qwen", message });
 
       if (message.type === "result") {
         if (!message.is_error) {

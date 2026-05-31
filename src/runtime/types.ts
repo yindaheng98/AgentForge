@@ -80,6 +80,7 @@ export abstract class BaseRuntime<K extends RuntimeKind = RuntimeKind> implement
 }
 
 export type RecordCallback<K extends RuntimeKind = RuntimeKind> = (
+  thread: Thread<K>,
   record: RuntimeRecord<K>,
 ) => void | Promise<void>;
 
