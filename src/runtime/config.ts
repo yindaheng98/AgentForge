@@ -2,7 +2,7 @@ import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
 import { OpencodeRuntime } from "./opencode.js";
 import { QwenRuntime } from "./qwen.js";
-import { isPlainObject, type PlainObject } from "../utils/object.js";
+import { isPlainObject, type PlainObject } from "../utils/index.js";
 import { isRuntimeKind, runtimeKinds } from "./types.js";
 import type { Runtime, RuntimeKind, RuntimeOptions, Thread, ThreadOptions } from "./types.js";
 

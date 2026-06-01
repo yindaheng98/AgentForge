@@ -4,7 +4,7 @@ import type {
   ThreadDefinitions,
 } from "../runtime/config.js";
 import { loadRuntimeThreadConfig } from "../runtime/config.js";
-import { isPlainObject, type PlainObject } from "../utils/object.js";
+import { isPlainObject, type PlainObject } from "../utils/index.js";
 import type { PromptConstants } from "./agent.js";
 
 export type AgentDefinition<

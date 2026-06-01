@@ -1,4 +1,4 @@
-import { mergePlainObjects } from "../utils/object.js";
+import { mergePlainObjects } from "../utils/index.js";
 
 export function formatValue(value: unknown): string {
   if (typeof value === "string") {

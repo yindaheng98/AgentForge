@@ -3,7 +3,7 @@ import { parse } from "yaml";
 import type { AgentDefinitions, RuntimeThreadAgentConfig } from "./agent/config.js";
 import { loadRuntimeThreadAgentConfig } from "./agent/config.js";
 import type { RuntimeDefinitions, ThreadDefinitions } from "./runtime/config.js";
-import { isPlainObject, mergePlainObjects, type PlainObject } from "./utils/object.js";
+import { isPlainObject, mergePlainObjects, type PlainObject } from "./utils/index.js";
 
 export type Config<
   Runtimes extends RuntimeDefinitions = RuntimeDefinitions,

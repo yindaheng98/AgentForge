@@ -4,7 +4,7 @@ import { parse } from "yaml";
 import { AgentTeam, defaultAgentFactories, type PromptVariables } from "./agent/index.js";
 import { loadConfig } from "./config.js";
 import type { RecordCallback } from "./runtime/index.js";
-import { isPlainObject } from "./utils/object.js";
+import { isPlainObject } from "./utils/index.js";
 
 function parseVariables(entry: string): PromptVariables {
   const value = parse(entry) as unknown;
