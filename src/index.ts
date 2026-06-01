@@ -1,4 +1,4 @@
-export { defineConfig, loadConfig } from "./config.js";
+export { defineConfig, loadConfig, mergeConfig } from "./config.js";
 export { Agent, AgentTeam, PromptTemplateAgent, formatPromptTemplate } from "./agent/index.js";
 export { createRuntime, startThread } from "./runtime/index.js";
 export { isPlainObject, mergePlainObjects, type PlainObject } from "./utils/index.js";

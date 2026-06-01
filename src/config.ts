@@ -21,6 +21,12 @@ export function defineConfig<
   return config;
 }
 
+export function mergeConfig(base: PlainObject | Config, override: PlainObject): Config {
+  return defineConfig(
+    loadRuntimeThreadAgentConfig(mergePlainObjects(base as PlainObject, override)),
+  );
+}
+
 export async function loadConfig(...paths: string[]): Promise<Config> {
   if (paths.length === 0) {
     throw new Error("loadConfig requires at least one path");
