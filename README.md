@@ -53,11 +53,14 @@ threads:
 
 agents:
   reviewer:
-    kind: code-reviewer
+    kind: prompt-template
     thread: runner
     constants:
+      template: |
+        Review this task in {{ language }}.
+
+        {{ prompt }}
       language: Chinese
-      prefix: Review this task.
 ```
 
 For `claude` and `qwen` runtimes, `runtime.options` uses the same shape as
@@ -89,7 +92,8 @@ config so it can override sensitive fields locally.
 ## Library usage
 
 ```ts
-import { Agent, loadConfig } from "coding-agent-forge";
+import { loadConfig } from "coding-agent-forge";
+import { Agent } from "coding-agent-forge/agent";
 import { createRuntime, startThread } from "coding-agent-forge/runtime";
 
 type ReviewVariables = {
@@ -144,6 +148,11 @@ different data and are typed separately.
 registered agent accepts. Keep it aligned with the factories you register and
 the agents in your config.
 
+`PromptTemplateAgent` is the default agent implementation. It expects a
+`template` constant and formats `{{ variable }}` placeholders using constants
+merged with the variables passed to `runStreamed`. Per-call variables override
+same-named constants.
+
 `AgentTeam` receives an `AgentFactoryMap` keyed by agent `kind`. Each factory gets
 the agent name, thread, and constants, then decides which concrete `Agent` to
 return. Validate constants inside the factory when an agent requires specific
@@ -168,11 +177,11 @@ export default defineConfig({
   },
   agents: {
     reviewer: {
-      kind: "code-reviewer",
+      kind: "prompt-template",
       thread: "main",
       constants: {
+        template: "Review this task in {{ language }}.\n\n{{ prompt }}",
         language: "Chinese",
-        prefix: "Review this task.",
       },
     },
   },
@@ -182,13 +191,14 @@ export default defineConfig({
 ## CLI
 
 ```bash
-npm run dev -- --config agent-forge.yaml --config secret.yaml --thread codex-runner "Inspect this repo" "What did you just do? Is this a new conversation?"
+npm run dev -- --config agent-forge.yaml --config secret.yaml --agent codex-agent "{ prompt: Inspect this repo }" "{ prompt: What did you just do? Is this a new conversation? }"
 ```
 
 Pass multiple `--config` files to merge them in order; object fields in later
-files are merged into earlier files. Omit `--thread` to run the first thread in
-the merged config. Pass multiple quoted prompts to run a multi-turn conversation
-on the same thread.
+files are merged into earlier files. Omit `--agent` to run the first agent in
+the merged config. Each positional argument is parsed as a YAML object whose
+values must be strings. Pass multiple YAML objects to run multiple turns on the
+same agent thread.
 
 The CLI prints runtime records to stderr and writes each final response to
 stdout.

@@ -50,3 +50,22 @@ threads:
         OPENAI_BASE_URL: https://api.deepseek.com
         OPENAI_MODEL: deepseek-reasoner
         OPENAI_REASONING_EFFORT: high
+
+agents:
+  codex-agent:
+    kind: prompt-template
+    thread: codex-runner
+    constants:
+      template: "{{ prompt }}"
+
+  opencode-agent:
+    kind: prompt-template
+    thread: opencode-runner
+    constants:
+      template: "{{ prompt }}"
+
+  qwen-agent:
+    kind: prompt-template
+    thread: qwen-runner
+    constants:
+      template: "{{ prompt }}"
