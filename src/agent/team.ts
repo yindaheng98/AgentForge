@@ -4,7 +4,6 @@ import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
 import type { RuntimeThreadAgentConfig } from "./config.js";
 
 export type AgentFactory = (
-  name: string,
   thread: Thread,
   constants: Readonly<PromptConstants>,
 ) => Agent;
@@ -71,7 +70,7 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
       throw new Error(`Unknown agent kind for ${name}: ${agentDefinition.kind}`);
     }
 
-    return factory(name, await this.getThread(agentDefinition.thread), constants);
+    return factory(await this.getThread(agentDefinition.thread), constants);
   }
 
   async getAgent<Name extends keyof VariablesByName & string>(

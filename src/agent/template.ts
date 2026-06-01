@@ -71,10 +71,10 @@ export class PromptTemplateAgent<Variables extends PromptVariables = PromptVaria
   Variables,
   PromptTemplateConstants
 > {
-  constructor(agentName: string, thread: Thread, constants: Readonly<PromptConstants>) {
+  constructor(thread: Thread, constants: Readonly<PromptConstants>) {
     const template = constants.template;
     if (template === undefined) {
-      throw new Error(`Agent ${agentName} constants must define template`);
+      throw new Error("PromptTemplateAgent constants must define template");
     }
 
     super(thread, { ...constants, template });
