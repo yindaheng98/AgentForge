@@ -5,6 +5,7 @@ export type {
   ThreadOptions,
   RuntimeRecord,
   Runtime,
+  BaseRuntime,
   Thread,
   RecordCallback,
 } from "./types.js";
