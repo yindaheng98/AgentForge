@@ -58,7 +58,9 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
     return await thread;
   }
 
-  private async createAgent(name: string): Promise<Agent> {
+  async createAgent<Name extends keyof VariablesByName & string>(
+    name: Name,
+  ): Promise<Agent<VariablesByName[Name]>> {
     const agentDefinition = this.config.agents[name];
     if (!agentDefinition) {
       throw new Error(`Unknown agent: ${name}`);
