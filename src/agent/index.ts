@@ -1,5 +1,6 @@
 export { Agent } from "./agent.js";
 export type { PromptVariables, PromptConstants } from "./agent.js";
+export { defaultAgentFactories } from "./factories.js";
 export {
   PromptTemplateAgent,
   formatPromptTemplate,
