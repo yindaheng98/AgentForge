@@ -5,11 +5,10 @@ export type {
   ThreadOptions,
   RuntimeRecord,
   Runtime,
-  BaseRuntime,
   Thread,
   RecordCallback,
 } from "./types.js";
-export { isRuntimeKind, runtimeKinds } from "./types.js";
+export { BaseRuntime, isRuntimeKind, runtimeKinds } from "./types.js";
 export {
   createRuntime,
   startThread,
