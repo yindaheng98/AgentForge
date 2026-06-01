@@ -1,3 +1,4 @@
+import type { Thread } from "../runtime/index.js";
 import { Agent, type PromptConstants, type PromptVariables } from "./agent.js";
 
 export type PromptTemplateConstants = PromptConstants & {
@@ -43,6 +44,15 @@ export class PromptTemplateAgent<Variables extends PromptVariables = PromptVaria
   Variables,
   PromptTemplateConstants
 > {
+  constructor(agentName: string, thread: Thread, constants: Readonly<PromptConstants>) {
+    const template = constants.template;
+    if (template === undefined) {
+      throw new Error(`Agent ${agentName} constants must define template`);
+    }
+
+    super(thread, { ...constants, template });
+  }
+
   protected buildPrompt(
     variables: Readonly<Variables>,
     constants: Readonly<PromptTemplateConstants>,
