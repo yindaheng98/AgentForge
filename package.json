@@ -1,6 +1,6 @@
 {
   "name": "coding-agent-forge",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "description": "A small runtime wrapper for Codex, Claude, Qwen Code, and opencode.",
   "repository": {
     "type": "git",
@@ -18,10 +18,14 @@
     "./runtime": {
       "types": "./dist/runtime/index.d.ts",
       "import": "./dist/runtime/index.js"
+    },
+    "./agent": {
+      "types": "./dist/agent/index.d.ts",
+      "import": "./dist/agent/index.js"
     }
   },
   "bin": {
-    "agent-forge": "dist/cli.js"
+    "coding-agent-forge": "dist/cli.js"
   },
   "files": [
     "dist",
