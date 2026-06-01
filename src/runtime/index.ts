@@ -1,24 +1,24 @@
 export type {
-  RuntimeKind,
   RuntimeSpec,
-  Runtime,
+  RuntimeKind,
   RuntimeOptions,
-  Thread,
   ThreadOptions,
   RuntimeRecord,
+  Runtime,
+  Thread,
   RecordCallback,
 } from "./types.js";
 export { isRuntimeKind, runtimeKinds } from "./types.js";
 export {
   createRuntime,
+  startThread,
   loadRuntimeDefinitions,
   loadThreadDefinitions,
-  startThread,
 } from "./config.js";
 export type {
   RuntimeDefinition,
   RuntimeDefinitions,
-  RuntimeThreadConfig,
   ThreadDefinition,
   ThreadDefinitions,
+  RuntimeThreadConfig,
 } from "./config.js";
