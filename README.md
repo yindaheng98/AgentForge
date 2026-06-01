@@ -154,9 +154,8 @@ merged with the variables passed to `runStreamed`. Per-call variables override
 same-named constants.
 
 `AgentTeam` receives an `AgentFactoryMap` keyed by agent `kind`. Each factory gets
-the agent name, thread, and constants, then decides which concrete `Agent` to
-return. Validate constants inside the factory when an agent requires specific
-constant keys.
+the thread and constants, then decides which concrete `Agent` to return. Validate
+constants inside the factory when an agent requires specific constant keys.
 
 For TypeScript-authored configuration, use `defineConfig` to keep thread options
 bound to the runtime kind selected by each named runtime. Agent thread names are
