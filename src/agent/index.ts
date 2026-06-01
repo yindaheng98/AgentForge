@@ -4,7 +4,6 @@ export type { AgentDefinition, AgentDefinitions, RuntimeThreadAgentConfig } from
 export { loadAgentDefinitions, loadRuntimeThreadAgentConfig } from "./config.js";
 export { AgentTeam } from "./team.js";
 export type { AgentFactory, AgentFactoryMap, AgentVariablesByName } from "./team.js";
-export type { Pipeline } from "./pipeline.js";
 export { PromptTemplateAgent, formatPromptTemplate } from "./template.js";
 export type { PromptTemplateConstants } from "./template.js";
 export { defaultAgentFactories } from "./factories.js";
