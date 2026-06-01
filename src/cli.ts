@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { parse } from "yaml";
-import { AgentTeam, defaultAgentFactories, type PromptVariables } from "./agent/index.js";
+import {
+  AgentTeam,
+  defaultAgentFactories,
+  type Pipeline,
+  type PromptVariables,
+} from "./agent/index.js";
 import { loadConfig } from "./config.js";
 import type { RecordCallback } from "./runtime/index.js";
 import { isPlainObject } from "./utils/object.js";
+
+type CliAgentVariablesByName = Record<string, PromptVariables>;
 
 function parseVariables(entry: string): PromptVariables {
   const value = parse(entry) as unknown;
@@ -23,6 +30,20 @@ function parseVariables(entry: string): PromptVariables {
 
   return variables;
 }
+
+const pipeline: Pipeline<[variableGroups: readonly string[]], CliAgentVariablesByName> = async (
+  team: AgentTeam<CliAgentVariablesByName>,
+  variableGroups: readonly string[],
+): Promise<void> => {
+  const logRecord: RecordCallback = (thread, record) => {
+    process.stderr.write(`${thread.recordToPrettyString(record)}\n`);
+  };
+
+  for (const variableGroup of variableGroups) {
+    const response = await team.runStreamed(agentName, parseVariables(variableGroup), logRecord);
+    process.stdout.write(`${response}\n`);
+  }
+};
 
 const { values, positionals: variableGroups } = parseArgs({
   args: process.argv.slice(2),
@@ -54,14 +75,7 @@ if (!config.agents[agentName]) {
 const team = new AgentTeam(config, defaultAgentFactories);
 
 try {
-  const logRecord: RecordCallback = (thread, record) => {
-    process.stderr.write(`${thread.recordToPrettyString(record)}\n`);
-  };
-
-  for (const variableGroup of variableGroups) {
-    const response = await team.runStreamed(agentName, parseVariables(variableGroup), logRecord);
-    process.stdout.write(`${response}\n`);
-  }
+  await pipeline(team, variableGroups);
 } finally {
   await team.close();
 }
