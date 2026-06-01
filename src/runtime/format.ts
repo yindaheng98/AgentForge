@@ -14,6 +14,7 @@ export function previewText(text: string, maxLength = 240): string {
   return trimmed.length <= maxLength ? trimmed : `${trimmed.slice(0, maxLength - 3)}...`;
 }
 
+// YAML options are checked only as plain objects; provider SDKs remain the final shape validators.
 export function mergePlainObjectOptions<T extends object>(base: T, override: T): T {
   return mergePlainObjects(
     base as Record<string, unknown>,

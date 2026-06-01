@@ -65,7 +65,7 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
       throw new Error(`Unknown agent: ${name}`);
     }
 
-    const constants: PromptConstants = agentDefinition.constants ?? {};
+    const constants = Object.freeze({ ...(agentDefinition.constants ?? {}) });
     const factory = this.factories[agentDefinition.kind];
     if (!factory) {
       throw new Error(`Unknown agent kind for ${name}: ${agentDefinition.kind}`);
@@ -103,11 +103,14 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
   }
 
   async close(): Promise<void> {
+    const agents = [...this.#agents.values()];
+    const threads = [...this.#threads.values()];
     const runtimes = [...this.#runtimes.values()];
     this.#agents.clear();
     this.#threads.clear();
     this.#runtimes.clear();
 
+    await Promise.allSettled([...agents, ...threads]);
     await Promise.all(runtimes.map((runtime) => runtime.close()));
   }
 }

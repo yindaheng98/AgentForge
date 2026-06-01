@@ -84,6 +84,10 @@ export class PromptTemplateAgent<Variables extends PromptVariables = PromptVaria
     variables: Readonly<Variables>,
     constants: Readonly<PromptTemplateConstants>,
   ): string {
+    if (Object.hasOwn(variables, "template")) {
+      throw new Error("Prompt variables cannot define reserved key: template");
+    }
+
     return formatPromptTemplate(
       constants.template,
       mergePromptTemplateVariables(constants, variables, ["template"]),
