@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 import { parseArgs } from "node:util";
 import { parse } from "yaml";
-import {
-  AgentTeam,
-  defaultAgentFactories,
-  type PromptVariables,
-} from "./agent/index.js";
+import { AgentTeam, defaultAgentFactories, type PromptVariables } from "./agent/index.js";
 import { loadConfig } from "./config.js";
 import type { RecordCallback } from "./runtime/index.js";
 import { isPlainObject } from "./utils/object.js";

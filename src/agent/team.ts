@@ -3,10 +3,7 @@ import type { RecordCallback, Runtime, Thread } from "../runtime/index.js";
 import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
 import type { RuntimeThreadAgentConfig } from "./config.js";
 
-export type AgentFactory = (
-  thread: Thread,
-  constants: Readonly<PromptConstants>,
-) => Agent;
+export type AgentFactory = (thread: Thread, constants: Readonly<PromptConstants>) => Agent;
 
 export type AgentFactoryMap = Record<string, AgentFactory>;
 
