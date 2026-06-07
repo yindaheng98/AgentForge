@@ -7,6 +7,13 @@ runtimes:
 
   qwen:
     kind: qwen
+    options:
+      authType: openai
+      model: deepseek-reasoner
+      env:
+        OPENAI_BASE_URL: https://api.deepseek.com
+        OPENAI_MODEL: deepseek-reasoner
+        OPENAI_REASONING_EFFORT: high
 
   opencode:
     kind: opencode
@@ -44,12 +51,6 @@ threads:
     runtime: qwen
     options:
       cwd: .
-      authType: openai
-      model: deepseek-reasoner
-      env:
-        OPENAI_BASE_URL: https://api.deepseek.com
-        OPENAI_MODEL: deepseek-reasoner
-        OPENAI_REASONING_EFFORT: high
 
 agents:
   codex-agent:
