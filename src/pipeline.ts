@@ -1,5 +1,7 @@
-import { type ParseArgsOptionDescriptor } from "node:util";
+import { parseArgs, type ParseArgsOptionDescriptor, type ParseArgsOptionsConfig } from "node:util";
 import { AgentTeam, type AgentFactoryMap, type AgentVariablesByName } from "./agent/index.js";
+import { mergeConfig } from "./config.js";
+import { isPlainObject, loadYamls, type PlainObject } from "./utils/index.js";
 
 export type PipelineArgsOption = ParseArgsOptionDescriptor & {
   description?: string;
@@ -24,3 +26,11 @@ export function definePipeline<
 >(pipeline: Pipeline<Options, VariablesByName>): Pipeline<Options, VariablesByName> {
   return pipeline;
 }
+
+const BUILTIN_PARAMS = {
+  config: {
+    type: "string",
+    multiple: true,
+    description: "YAML config file; repeat to merge multiple files in order",
+  },
+} satisfies PipelineArgsOptions;
