@@ -1,6 +1,5 @@
 import { parseArgs } from "node:util";
-import type { PlainObject } from "../utils/index.js";
-import type { PipelineArgsOptions } from "./types.js";
+import type { PipelineArgsOptions, PipelineOptions } from "./types.js";
 
 function formatUsage(pipeline: {
   name: string;
@@ -43,19 +42,22 @@ function formatUsage(pipeline: {
   ].join("\n");
 }
 
-export function parsePipelineArgs(
-  pipeline: { name: string; description: string; argsOptions: PipelineArgsOptions },
+export function parsePipelineArgs<ArgsOptions extends PipelineArgsOptions>(
+  pipeline: { name: string; description: string; argsOptions: ArgsOptions },
   args: readonly string[],
-): { configPaths: readonly string[]; options: PlainObject } {
+): { configPaths: readonly string[]; options: PipelineOptions<ArgsOptions> } {
   if (Object.hasOwn(pipeline.argsOptions, "config")) {
     throw new Error(`Pipeline ${pipeline.name} declares a reserved param: --config`);
   }
+  // Annotate as the base type so parseArgs keeps inferring `config`; the generic ArgsOptions
+  // would otherwise collapse the spread to `{}` and drop the precise value types.
+  const argsOptions: PipelineArgsOptions = pipeline.argsOptions;
   const {
     values: { config, ...parsedArgs },
   } = parseArgs({
     args: [...args],
     options: {
-      ...pipeline.argsOptions,
+      ...argsOptions,
       config: {
         type: "string",
         multiple: true,
@@ -75,5 +77,8 @@ export function parsePipelineArgs(
   if (missing.length > 0) {
     throw new Error(`Missing required options: ${missing.join(", ")}\n\n${formatUsage(pipeline)}`);
   }
-  return { configPaths: config as readonly string[], options: parsedArgs };
+  return {
+    configPaths: config as readonly string[],
+    options: parsedArgs as PipelineOptions<ArgsOptions>,
+  };
 }
