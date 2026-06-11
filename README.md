@@ -251,12 +251,13 @@ await runPipelinesCli([reviewPipeline], process.argv.slice(2));
 Everything `parseArgs` supports works unchanged: `type: "boolean"` makes a
 flag, `multiple: true` collects an array, `short: "v"` adds an alias, and
 `default` values are applied by `parseArgs` itself (so a numeric default is
-written as a string and coerced inside the flow). The runner adds one
-type-agnostic convention: a param without a `default` is required, and missing
-flags raise an error whose message includes the generated usage text; other
-`parseArgs` errors are thrown as-is. Note that `parseArgs` still types
-non-defaulted params as possibly `undefined`, so narrow them inside the flow
-or declare a `default` (e.g. `default: false` for an optional boolean flag).
+written as a string and coerced inside the flow). The runner itself only
+requires `--config`; a missing `--config` raises an error whose message
+includes the generated usage text, and other `parseArgs` errors are thrown
+as-is. Params without a `default` are typed as possibly `undefined` (matching
+`parseArgs`), so validate them inside the flow or declare a `default` (e.g.
+`default: false` for an optional boolean flag); the generated usage still
+marks them as required.
 `--config` is built in and repeatable: all YAML files are merged in order, so
 each pipeline can ship its own config fragment.
 The runner builds one `AgentTeam` from the merged config and the pipeline's

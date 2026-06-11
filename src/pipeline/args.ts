@@ -65,20 +65,11 @@ export function parsePipelineArgs<ArgsOptions extends PipelineArgsOptions>(
     },
   });
 
-  const missing: string[] = [];
-  if (config === undefined || config.length === 0) {
-    missing.push("--config");
-  }
-  for (const flag of Object.keys(pipeline.argsOptions)) {
-    if (!Object.hasOwn(parsedArgs, flag)) {
-      missing.push(`--${flag}`);
-    }
-  }
-  if (missing.length > 0) {
-    throw new Error(`Missing required options: ${missing.join(", ")}\n\n${formatUsage(pipeline)}`);
+  if (config === undefined) {
+    throw new Error(`Missing required option: --config\n\n${formatUsage(pipeline)}`);
   }
   return {
-    configPaths: config as readonly string[],
+    configPaths: config,
     options: parsedArgs as PipelineOptions<ArgsOptions>,
   };
 }
