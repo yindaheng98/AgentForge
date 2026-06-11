@@ -1,6 +1,10 @@
-import { type parseArgs } from "node:util";
+import { type parseArgs, type ParseArgsOptionDescriptor } from "node:util";
 import { AgentTeam, type AgentFactoryMap, type AgentVariablesByName } from "../agent/index.js";
-import type { PipelineArgsOptions } from "./args.js";
+
+export type PipelineArgsOption = ParseArgsOptionDescriptor & {
+  description?: string;
+};
+export type PipelineArgsOptions = Record<string, PipelineArgsOption>;
 
 export type PipelineOptions<ArgsOptions extends PipelineArgsOptions> = ReturnType<
   typeof parseArgs<{ options: ArgsOptions }>

@@ -1,10 +1,6 @@
-import { parseArgs, type ParseArgsOptionDescriptor } from "node:util";
+import { parseArgs } from "node:util";
 import type { PlainObject } from "../utils/index.js";
-
-export type PipelineArgsOption = ParseArgsOptionDescriptor & {
-  description?: string;
-};
-export type PipelineArgsOptions = Record<string, PipelineArgsOption>;
+import type { PipelineArgsOptions } from "./types.js";
 
 function formatUsage(pipeline: {
   name: string;
