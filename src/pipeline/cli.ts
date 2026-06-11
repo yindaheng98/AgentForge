@@ -1,38 +1,19 @@
-import {
-  AgentTeam,
-  loadRuntimeThreadAgentConfig,
-  type AgentVariablesByName,
-} from "../agent/index.js";
-import { isPlainObject, loadYamls, type PlainObject } from "../utils/index.js";
+import { AgentTeam, type AgentVariablesByName } from "../agent/index.js";
+import { loadConfig } from "../config.js";
 import { parsePipelineArgs } from "./args.js";
 import type { Pipeline, PipelineArgsOptions } from "./types.js";
-
-export function buildAgentTeam<VariablesByName extends AgentVariablesByName>(
-  rawConfig: PlainObject,
-  pipeline: Pipeline<PipelineArgsOptions, VariablesByName>,
-): AgentTeam<VariablesByName> {
-  if (!isPlainObject(rawConfig.agents)) {
-    throw new Error("Config must define an agents object");
-  }
-
-  const configuredAgents = Object.fromEntries(
-    Object.entries(rawConfig.agents).filter(([name]) =>
-      Object.hasOwn(pipeline.agentFactories, name),
-    ),
-  );
-
-  return new AgentTeam<VariablesByName>(
-    loadRuntimeThreadAgentConfig({ ...rawConfig, agents: configuredAgents }),
-    pipeline.agentFactories,
-  );
-}
 
 export async function runPipelineCli<
   ArgsOptions extends PipelineArgsOptions,
   VariablesByName extends AgentVariablesByName,
 >(pipeline: Pipeline<ArgsOptions, VariablesByName>, args: readonly string[]): Promise<void> {
   const { configPaths, options } = parsePipelineArgs(pipeline, args);
-  const team = buildAgentTeam(await loadYamls(...configPaths), pipeline);
+  // Agents without a matching factory are harmless: factories are only consulted inside
+  // createAgent, so an uncalled agent definition never spawns a thread or fails.
+  const team = new AgentTeam<VariablesByName>(
+    await loadConfig(...configPaths),
+    pipeline.agentFactories,
+  );
   try {
     await pipeline.run(team, options);
   } finally {
