@@ -71,14 +71,13 @@ export function parsePipelineArgs(
   if (config === undefined || config.length === 0) {
     missing.push("--config");
   }
-  for (const [flag, option] of Object.entries(pipeline.params)) {
-    if (option.default === undefined && !Object.hasOwn(parsedArgs, flag)) {
+  for (const flag of Object.keys(pipeline.params)) {
+    if (!Object.hasOwn(parsedArgs, flag)) {
       missing.push(`--${flag}`);
     }
   }
   if (missing.length > 0) {
     throw new Error(`Missing required options: ${missing.join(", ")}\n\n${formatUsage(pipeline)}`);
   }
-
   return { configPaths: config as readonly string[], options: parsedArgs };
 }
