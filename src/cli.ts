@@ -1,67 +1,39 @@
 #!/usr/bin/env node
-import { parseArgs } from "node:util";
-import { parse } from "yaml";
-import { AgentTeam, defaultAgentFactories, type PromptVariables } from "./agent/index.js";
-import { loadConfig } from "./config.js";
+import { pathToFileURL } from "node:url";
+import { defaultAgentFactories } from "./agent/index.js";
+import { definePipeline, runPipelinesCli, type PipelineArgsOptions } from "./pipeline/index.js";
 import type { RecordCallback } from "./runtime/index.js";
-import { isPlainObject } from "./utils/index.js";
 
-function parseVariables(entry: string): PromptVariables {
-  const value = parse(entry) as unknown;
-  if (!isPlainObject(value)) {
-    throw new Error("Variables must be a YAML object");
-  }
+export const promptArgsOptions = {
+  agent: { type: "string", description: "Configured agent name to run" },
+  prompt: { type: "string", description: "Prompt sent to the agent" },
+} satisfies PipelineArgsOptions;
 
-  const variables: PromptVariables = {};
-  for (const [key, entryValue] of Object.entries(value)) {
-    if (typeof entryValue !== "string") {
-      throw new Error(`Variable ${key} must be a string`);
+export const promptPipeline = definePipeline({
+  name: "prompt",
+  description: "Send a prompt to a configured agent and print the response.",
+  argsOptions: promptArgsOptions,
+  agentFactories: defaultAgentFactories,
+  async run(team, options) {
+    const { agent, prompt } = options;
+    if (agent === undefined || prompt === undefined) {
+      throw new Error("--agent and --prompt are required");
     }
 
-    variables[key] = entryValue;
-  }
+    const logRecord: RecordCallback = (thread, record) => {
+      process.stderr.write(`${thread.recordToPrettyString(record)}\n`);
+    };
 
-  return variables;
-}
-
-const { values, positionals: variableGroups } = parseArgs({
-  args: process.argv.slice(2),
-  options: {
-    config: { type: "string", multiple: true },
-    agent: { type: "string" },
+    const response = await team.runStreamed(agent, { prompt }, logRecord);
+    process.stdout.write(`${response}\n`);
   },
-  allowPositionals: true,
 });
 
-const configPaths =
-  values.config && values.config.length > 0 ? values.config : ["agent-forge.yaml"];
-
-if (variableGroups.length === 0) {
-  console.error(
-    'Usage: agent-forge --config base.yaml [--config override.yaml] [--agent reviewer] "{ prompt: Inspect this repo }" "{ prompt: What did you just do? Is this a new conversation? }"',
-  );
-  process.exit(1);
+function isDirectCli(): boolean {
+  const entry = process.argv[1];
+  return entry !== undefined && import.meta.url === pathToFileURL(entry).href;
 }
 
-const config = await loadConfig(...configPaths);
-const [defaultAgentName = ""] = Object.keys(config.agents);
-const agentName = values.agent ?? defaultAgentName;
-
-if (!config.agents[agentName]) {
-  throw new Error(`Unknown agent: ${agentName}`);
-}
-
-const team = new AgentTeam(config, defaultAgentFactories);
-
-try {
-  const logRecord: RecordCallback = (thread, record) => {
-    process.stderr.write(`${thread.recordToPrettyString(record)}\n`);
-  };
-
-  for (const variableGroup of variableGroups) {
-    const response = await team.runStreamed(agentName, parseVariables(variableGroup), logRecord);
-    process.stdout.write(`${response}\n`);
-  }
-} finally {
-  await team.close();
+if (isDirectCli()) {
+  await runPipelinesCli([promptPipeline], process.argv.slice(2));
 }
