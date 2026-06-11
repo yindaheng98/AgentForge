@@ -11,7 +11,13 @@ function formatUsage(pipeline: {
   description: string;
   params: PipelineArgsOptions;
 }): string {
-  const rows = Object.entries(pipeline.params).map(([flag, param]) => {
+  const builtinRows = [
+    [
+      "--config <path>",
+      "YAML config file; repeat to merge multiple files in order (repeatable; required)",
+    ],
+  ] as const;
+  const parsedRows = Object.entries(pipeline.params).map(([flag, param]) => {
     const alias = param.short === undefined ? "" : `-${param.short}, `;
     const notes: string[] = [];
     if (param.multiple === true) {
@@ -28,10 +34,11 @@ function formatUsage(pipeline: {
     const description = param.description === undefined ? suffix : `${param.description} ${suffix}`;
     return [`${alias}--${flag} <${param.type}>`, description] as const;
   });
+  const rows = [...builtinRows, ...parsedRows];
 
   const flagWidth = Math.max(...rows.map(([flag]) => flag.length));
   return [
-    `Usage: ${pipeline.name} --config <path> [options]`,
+    `Usage: ${pipeline.name}`,
     "",
     pipeline.description,
     "",
@@ -56,7 +63,6 @@ export function parsePipelineArgs(
       config: {
         type: "string",
         multiple: true,
-        description: "YAML config file; repeat to merge multiple files in order",
       },
     },
   });
