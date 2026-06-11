@@ -1,4 +1,4 @@
-import { parseArgs, type ParseArgsOptionDescriptor, type ParseArgsOptionsConfig } from "node:util";
+import { parseArgs, type ParseArgsOptionDescriptor } from "node:util";
 import { AgentTeam, type AgentFactoryMap, type AgentVariablesByName } from "./agent/index.js";
 import { mergeConfig } from "./config.js";
 import { isPlainObject, loadYamls, type PlainObject } from "./utils/index.js";
@@ -14,7 +14,7 @@ export type Pipeline<
 > = {
   name: string;
   description: string;
-  params: PipelineArgsOptions;
+  params: PipelineArgsOptions; // TODO: sync with options in run like parseArgs
   agentFactories: AgentFactoryMap;
   // Method syntax keeps the parameters bivariant, so concrete pipelines fit `readonly Pipeline[]`.
   run(team: AgentTeam<VariablesByName>, options: Options): Promise<void>;
@@ -26,14 +26,6 @@ export function definePipeline<
 >(pipeline: Pipeline<Options, VariablesByName>): Pipeline<Options, VariablesByName> {
   return pipeline;
 }
-
-const BUILTIN_PARAMS = {
-  config: {
-    type: "string",
-    multiple: true,
-    description: "YAML config file; repeat to merge multiple files in order",
-  },
-} satisfies PipelineArgsOptions;
 
 function formatUsage(pipeline: {
   name: string;
@@ -67,4 +59,41 @@ function formatUsage(pipeline: {
     "Options:",
     ...rows.map(([flag, description]) => `  ${flag.padEnd(flagWidth)}  ${description}`.trimEnd()),
   ].join("\n");
+}
+
+export function parsePipelineArgs(
+  pipeline: { name: string; description: string; params: PipelineArgsOptions },
+  args: readonly string[],
+): { configPaths: readonly string[]; options: PlainObject } {
+  if (Object.hasOwn(pipeline.params, "config")) {
+    throw new Error(`Pipeline ${pipeline.name} declares a reserved param: --config`);
+  }
+  const {
+    values: { config, ...parsedArgs },
+  } = parseArgs({
+    args: [...args],
+    options: {
+      ...pipeline.params,
+      config: {
+        type: "string",
+        multiple: true,
+        description: "YAML config file; repeat to merge multiple files in order",
+      },
+    },
+  });
+
+  const missing: string[] = [];
+  if (config === undefined || config.length === 0) {
+    missing.push("--config");
+  }
+  for (const [flag, option] of Object.entries(pipeline.params)) {
+    if (option.default === undefined && !Object.hasOwn(parsedArgs, flag)) {
+      missing.push(`--${flag}`);
+    }
+  }
+  if (missing.length > 0) {
+    throw new Error(`Missing required options: ${missing.join(", ")}\n\n${formatUsage(pipeline)}`);
+  }
+
+  return { configPaths: config as readonly string[], options: parsedArgs };
 }
