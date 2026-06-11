@@ -1,31 +1,10 @@
 import { parseArgs, type ParseArgsOptionDescriptor } from "node:util";
-import { AgentTeam, type AgentFactoryMap, type AgentVariablesByName } from "./agent/index.js";
-import { mergeConfig } from "./config.js";
-import { isPlainObject, loadYamls, type PlainObject } from "./utils/index.js";
+import type { PlainObject } from "../utils/index.js";
 
 export type PipelineArgsOption = ParseArgsOptionDescriptor & {
   description?: string;
 };
 export type PipelineArgsOptions = Record<string, PipelineArgsOption>;
-
-export type Pipeline<
-  Options extends object = object,
-  VariablesByName extends AgentVariablesByName = AgentVariablesByName,
-> = {
-  name: string;
-  description: string;
-  params: PipelineArgsOptions; // TODO: sync with options in run like parseArgs
-  agentFactories: AgentFactoryMap;
-  // Method syntax keeps the parameters bivariant, so concrete pipelines fit `readonly Pipeline[]`.
-  run(team: AgentTeam<VariablesByName>, options: Options): Promise<void>;
-};
-
-export function definePipeline<
-  Options extends object,
-  VariablesByName extends AgentVariablesByName,
->(pipeline: Pipeline<Options, VariablesByName>): Pipeline<Options, VariablesByName> {
-  return pipeline;
-}
 
 function formatUsage(pipeline: {
   name: string;
