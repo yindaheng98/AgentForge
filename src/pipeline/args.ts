@@ -9,7 +9,7 @@ export type PipelineArgsOptions = Record<string, PipelineArgsOption>;
 function formatUsage(pipeline: {
   name: string;
   description: string;
-  params: PipelineArgsOptions;
+  argsOptions: PipelineArgsOptions;
 }): string {
   const builtinRows = [
     [
@@ -17,7 +17,7 @@ function formatUsage(pipeline: {
       "YAML config file; repeat to merge multiple files in order (repeatable; required)",
     ],
   ] as const;
-  const parsedRows = Object.entries(pipeline.params).map(([flag, param]) => {
+  const parsedRows = Object.entries(pipeline.argsOptions).map(([flag, param]) => {
     const alias = param.short === undefined ? "" : `-${param.short}, `;
     const notes: string[] = [];
     if (param.multiple === true) {
@@ -48,10 +48,10 @@ function formatUsage(pipeline: {
 }
 
 export function parsePipelineArgs(
-  pipeline: { name: string; description: string; params: PipelineArgsOptions },
+  pipeline: { name: string; description: string; argsOptions: PipelineArgsOptions },
   args: readonly string[],
 ): { configPaths: readonly string[]; options: PlainObject } {
-  if (Object.hasOwn(pipeline.params, "config")) {
+  if (Object.hasOwn(pipeline.argsOptions, "config")) {
     throw new Error(`Pipeline ${pipeline.name} declares a reserved param: --config`);
   }
   const {
@@ -59,7 +59,7 @@ export function parsePipelineArgs(
   } = parseArgs({
     args: [...args],
     options: {
-      ...pipeline.params,
+      ...pipeline.argsOptions,
       config: {
         type: "string",
         multiple: true,
@@ -71,7 +71,7 @@ export function parsePipelineArgs(
   if (config === undefined || config.length === 0) {
     missing.push("--config");
   }
-  for (const flag of Object.keys(pipeline.params)) {
+  for (const flag of Object.keys(pipeline.argsOptions)) {
     if (!Object.hasOwn(parsedArgs, flag)) {
       missing.push(`--${flag}`);
     }
