@@ -35,6 +35,9 @@ export function loadAgentDefinitions(
     if (!isPlainObject(agent)) {
       throw new Error(`Agent ${name} must be an object`);
     }
+    if (agent.kind === undefined) {
+      agent.kind = name;
+    }
     if (typeof agent.kind !== "string") {
       throw new Error(`Agent ${name} must define a kind`);
     }

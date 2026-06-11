@@ -1,5 +1,8 @@
-import { AgentTeam, type AgentVariablesByName } from "../agent/index.js";
-import { mergeConfig } from "../config.js";
+import {
+  AgentTeam,
+  loadRuntimeThreadAgentConfig,
+  type AgentVariablesByName,
+} from "../agent/index.js";
 import { isPlainObject, loadYamls, type PlainObject } from "../utils/index.js";
 import { parsePipelineArgs } from "./args.js";
 import type { Pipeline, PipelineArgsOptions } from "./types.js";
@@ -18,12 +21,8 @@ export function buildAgentTeam<VariablesByName extends AgentVariablesByName>(
     ),
   );
 
-  const agents = Object.fromEntries(
-    Object.keys(pipeline.agentFactories).map((name) => [name, { kind: name }]),
-  );
-
   return new AgentTeam<VariablesByName>(
-    mergeConfig({ ...rawConfig, agents: configuredAgents }, { agents }),
+    loadRuntimeThreadAgentConfig({ ...rawConfig, agents: configuredAgents }),
     pipeline.agentFactories,
   );
 }
