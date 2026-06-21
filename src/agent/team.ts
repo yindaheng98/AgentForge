@@ -35,19 +35,23 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
     return runtime;
   }
 
-  private async getThread(name: string): Promise<Thread> {
-    const cachedThread = this.#threads.get(name);
-    if (cachedThread) {
-      return await cachedThread;
-    }
-
+  async createThread(name: string): Promise<Thread> {
     const threadDefinition = this.config.threads[name];
     if (!threadDefinition) {
       throw new Error(`Unknown thread: ${name}`);
     }
 
     const runtime = this.getRuntime(threadDefinition.runtime);
-    const thread = startThread(runtime, threadDefinition.options).catch((error: unknown) => {
+    return await startThread(runtime, threadDefinition.options);
+  }
+
+  async getThread(name: string): Promise<Thread> {
+    const cachedThread = this.#threads.get(name);
+    if (cachedThread) {
+      return await cachedThread;
+    }
+
+    const thread = this.createThread(name).catch((error: unknown) => {
       this.#threads.delete(name);
       throw error;
     });
@@ -69,7 +73,7 @@ export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVaria
       throw new Error(`Unknown agent kind for ${name}: ${agentDefinition.kind}`);
     }
 
-    return factory(await this.getThread(agentDefinition.thread), constants);
+    return factory(await this.createThread(agentDefinition.thread), constants);
   }
 
   async getAgent<Name extends keyof VariablesByName & string>(

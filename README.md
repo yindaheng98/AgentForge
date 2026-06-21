@@ -157,8 +157,10 @@ same-named constants.
 omits `kind`, its agent name is used as the kind. Each factory gets the thread
 and constants, then decides which concrete `Agent` to return. Validate constants
 inside the factory when an agent requires specific constant keys. Use
-`createAgent` when you need a fresh uncached agent instance, or `getAgent` to
-reuse the cached agent for a configured name.
+`createThread` when you need a fresh uncached thread, or `getThread` to reuse
+the cached thread for a configured name. `createAgent` creates a fresh uncached
+agent on a fresh thread; `getAgent` reuses the cached agent for a configured
+name.
 
 For TypeScript-authored configuration, use `defineConfig` to keep thread options
 bound to the runtime kind selected by each named runtime. Agent thread names are
