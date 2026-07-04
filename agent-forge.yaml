@@ -5,6 +5,14 @@ runtimes:
   claude:
     kind: claude
 
+  cursor:
+    kind: cursor
+    options:
+      model:
+        id: composer-2.5
+      local:
+        cwd: .
+
   qwen:
     kind: qwen
     options:
@@ -41,6 +49,9 @@ threads:
       workingDirectory: .
       sandboxMode: danger-full-access
 
+  cursor-runner:
+    runtime: cursor
+
   opencode-runner:
     runtime: opencode
     options:
@@ -56,6 +67,12 @@ agents:
   codex-agent:
     kind: prompt-template
     thread: codex-runner
+    constants:
+      template: "{{ prompt }}"
+
+  cursor-agent:
+    kind: prompt-template
+    thread: cursor-runner
     constants:
       template: "{{ prompt }}"
 

@@ -7,12 +7,14 @@ SDK.
 ## Runtime kinds
 
 - `codex`: wraps `@openai/codex-sdk`
+- `cursor`: wraps `@cursor/sdk`
 - `claude`: wraps `@anthropic-ai/claude-agent-sdk`
 - `qwen`: wraps `@qwen-code/sdk`
 - `opencode`: wraps `@opencode-ai/sdk`
 
 The workflow layer gets `RuntimeRecord` values with a `runtime` marker added:
 `{ runtime: "codex", input }`, `{ runtime: "codex", event }`,
+`{ runtime: "cursor", message }`, `{ runtime: "cursor", result }`,
 `{ runtime: "claude", message }`, `{ runtime: "qwen", message }`,
 `{ runtime: "opencode", request }`, or `{ runtime: "opencode", event }`.
 
@@ -21,6 +23,8 @@ variables, combine them with static prompt constants, build a prompt internally,
 and pass that prompt to the underlying thread.
 
 ## Install
+
+Requires Node.js 22.13 or newer.
 
 ```bash
 npm install
@@ -67,6 +71,27 @@ For `claude` and `qwen` runtimes, `runtime.options` uses the same shape as
 `thread.options`. These options are not SDK client or server initialization
 parameters; they are default query options for every thread started from that
 runtime. A thread's own `options` are merged over the runtime defaults.
+
+For `cursor`, both `runtime.options` and `thread.options` use `@cursor/sdk`
+`AgentOptions`. The runtime options are defaults for `Agent.create`, and the
+thread options merge over them before creating the SDK agent. Local Cursor agents
+need a `model` and usually an explicit `local.cwd`; authentication falls back to
+`CURSOR_API_KEY` when `apiKey` is omitted.
+
+```yaml
+runtimes:
+  cursor-main:
+    kind: cursor
+    options:
+      model:
+        id: composer-2.5
+      local:
+        cwd: .
+
+threads:
+  cursor-review:
+    runtime: cursor-main
+```
 
 ```yaml
 runtimes:
