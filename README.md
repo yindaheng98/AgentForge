@@ -9,12 +9,10 @@ SDK.
 - `codex`: wraps `@openai/codex-sdk`
 - `claude`: wraps `@anthropic-ai/claude-agent-sdk`
 - `qwen`: wraps `@qwen-code/sdk`
-- `opencode`: wraps `@opencode-ai/sdk`
 
 The workflow layer gets `RuntimeRecord` values with a `runtime` marker added:
 `{ runtime: "codex", input }`, `{ runtime: "codex", event }`,
-`{ runtime: "claude", message }`, `{ runtime: "qwen", message }`,
-`{ runtime: "opencode", request }`, or `{ runtime: "opencode", event }`.
+`{ runtime: "claude", message }`, or `{ runtime: "qwen", message }`.
 
 On top of runtimes and threads, the `agent` layer lets each agent accept prompt
 variables, combine them with static prompt constants, build a prompt internally,

@@ -12,16 +12,9 @@ import type {
   QueryOptions as QwenSdkThreadOptions,
   SDKMessage as QwenSdkMessage,
 } from "@qwen-code/sdk";
-import type {
-  Event as OpencodeEvent,
-  OpencodeClient,
-  ServerOptions as OpencodeSdkRuntimeOptions,
-} from "@opencode-ai/sdk";
 
 type ClaudeSdkRuntimeOptions = ClaudeSdkThreadOptions;
 type QwenSdkRuntimeOptions = QwenSdkThreadOptions;
-type OpencodeCreateOptions = NonNullable<Parameters<OpencodeClient["session"]["create"]>[0]>;
-type OpencodeSdkThreadOptions = Omit<OpencodeCreateOptions, "throwOnError">;
 
 export type RuntimeSpec = {
   codex: {
@@ -39,13 +32,6 @@ export type RuntimeSpec = {
     threadOptions: QwenSdkThreadOptions;
     record: { runtime: "qwen"; message: QwenSdkMessage };
   };
-  opencode: {
-    runtimeOptions: OpencodeSdkRuntimeOptions;
-    threadOptions: OpencodeSdkThreadOptions;
-    record:
-      | { runtime: "opencode"; request: string }
-      | { runtime: "opencode"; event: OpencodeEvent };
-  };
 };
 export type RuntimeKind = keyof RuntimeSpec;
 
@@ -53,7 +39,6 @@ const runtimeKindMap = {
   codex: true,
   claude: true,
   qwen: true,
-  opencode: true,
 } satisfies Record<RuntimeKind, true>;
 
 export const runtimeKinds = Object.keys(runtimeKindMap) as RuntimeKind[];

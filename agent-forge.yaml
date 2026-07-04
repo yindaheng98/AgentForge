@@ -15,24 +15,6 @@ runtimes:
         OPENAI_MODEL: deepseek-reasoner
         OPENAI_REASONING_EFFORT: high
 
-  opencode:
-    kind: opencode
-    options:
-      config:
-        model: deepseek/deepseek-reasoner
-        small_model: deepseek/deepseek-reasoner
-        enabled_providers:
-          - deepseek
-        provider:
-          deepseek:
-            name: DeepSeek
-            options:
-              baseURL: https://api.deepseek.com
-            models:
-              deepseek-chat:
-                options:
-                  reasoningEffort: high
-
 threads:
   codex-runner:
     runtime: codex
@@ -40,12 +22,6 @@ threads:
       model: gpt-5.3-codex
       workingDirectory: .
       sandboxMode: danger-full-access
-
-  opencode-runner:
-    runtime: opencode
-    options:
-      query:
-        directory: .
 
   qwen-runner:
     runtime: qwen
@@ -56,12 +32,6 @@ agents:
   codex-agent:
     kind: prompt-template
     thread: codex-runner
-    constants:
-      template: "{{ prompt }}"
-
-  opencode-agent:
-    kind: prompt-template
-    thread: opencode-runner
     constants:
       template: "{{ prompt }}"
 

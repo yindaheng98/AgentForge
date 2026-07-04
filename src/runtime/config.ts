@@ -1,6 +1,5 @@
 import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
-import { OpencodeRuntime } from "./opencode.js";
 import { QwenRuntime } from "./qwen.js";
 import { isPlainObject, type PlainObject } from "../utils/index.js";
 import { isRuntimeKind, runtimeKinds } from "./types.js";
@@ -16,7 +15,6 @@ const runtimeFactoryMap: RuntimeFactoryMap = {
   codex: (options) => new CodexRuntime(options),
   claude: (options) => new ClaudeRuntime(options),
   qwen: (options) => new QwenRuntime(options),
-  opencode: (options) => new OpencodeRuntime(options),
 };
 
 export type RuntimeDefinition<K extends RuntimeKind = RuntimeKind> = {
