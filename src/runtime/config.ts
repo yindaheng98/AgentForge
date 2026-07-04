@@ -1,5 +1,6 @@
 import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
+import { CopilotRuntime } from "./copilot.js";
 import { CursorRuntime } from "./cursor.js";
 import { OpencodeRuntime } from "./opencode.js";
 import { QwenRuntime } from "./qwen.js";
@@ -16,6 +17,7 @@ type RuntimeFactoryMap = {
 const runtimeFactoryMap: RuntimeFactoryMap = {
   codex: (options) => new CodexRuntime(options),
   cursor: (options) => new CursorRuntime(options),
+  copilot: (options) => new CopilotRuntime(options),
   claude: (options) => new ClaudeRuntime(options),
   qwen: (options) => new QwenRuntime(options),
   opencode: (options) => new OpencodeRuntime(options),

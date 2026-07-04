@@ -10,6 +10,11 @@ import type {
   SDKMessage as CursorSdkMessage,
 } from "@cursor/sdk";
 import type {
+  CopilotClientOptions,
+  SessionConfig as CopilotSdkThreadOptions,
+  SessionEvent as CopilotSdkSessionEvent,
+} from "@github/copilot-sdk";
+import type {
   Options as ClaudeSdkThreadOptions,
   SDKMessage as ClaudeSDKMessage,
 } from "@anthropic-ai/claude-agent-sdk";
@@ -29,6 +34,7 @@ type OpencodeCreateOptions = NonNullable<Parameters<OpencodeClient["session"]["c
 type OpencodeSdkThreadOptions = Omit<OpencodeCreateOptions, "throwOnError">;
 type CursorSdkRuntimeOptions = CursorSdkAgentOptions;
 type CursorSdkThreadOptions = CursorSdkAgentOptions;
+type CopilotSdkRuntimeOptions = CopilotClientOptions;
 
 export type RuntimeSpec = {
   codex: {
@@ -42,6 +48,11 @@ export type RuntimeSpec = {
     record:
       | { runtime: "cursor"; message: CursorSdkMessage }
       | { runtime: "cursor"; result: CursorSdkRunResult };
+  };
+  copilot: {
+    runtimeOptions: CopilotSdkRuntimeOptions;
+    threadOptions: CopilotSdkThreadOptions;
+    record: { runtime: "copilot"; event: CopilotSdkSessionEvent };
   };
   claude: {
     runtimeOptions: ClaudeSdkRuntimeOptions;
@@ -66,6 +77,7 @@ export type RuntimeKind = keyof RuntimeSpec;
 const runtimeKindMap = {
   codex: true,
   cursor: true,
+  copilot: true,
   claude: true,
   qwen: true,
   opencode: true,
