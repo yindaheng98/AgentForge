@@ -13,6 +13,9 @@ runtimes:
       local:
         cwd: .
 
+  copilot:
+    kind: copilot
+
   qwen:
     kind: qwen
     options:
@@ -52,6 +55,15 @@ threads:
   cursor-runner:
     runtime: cursor
 
+  copilot-runner:
+    runtime: copilot
+    options:
+      model: deepseek-reasoner
+      workingDirectory: .
+      provider:
+        type: anthropic
+        baseUrl: https://api.deepseek.com/anthropic
+
   opencode-runner:
     runtime: opencode
     options:
@@ -73,6 +85,12 @@ agents:
   cursor-agent:
     kind: prompt-template
     thread: cursor-runner
+    constants:
+      template: "{{ prompt }}"
+
+  copilot-agent:
+    kind: prompt-template
+    thread: copilot-runner
     constants:
       template: "{{ prompt }}"
 

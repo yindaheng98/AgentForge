@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import { CopilotClient, type CopilotSession } from "@github/copilot-sdk";
 import { BaseRuntime } from "./types.js";
 import { formatValue, previewText } from "./format.js";
@@ -9,19 +10,45 @@ import type {
   ThreadOptions,
 } from "./types.js";
 
+type CopilotDirectoryOptions = {
+  baseDirectory?: string;
+  configDirectory?: string;
+  workingDirectory?: string;
+};
+
+function resolveDirectoryOptions<T extends CopilotDirectoryOptions>(options: T): T {
+  const resolved = { ...options };
+
+  if (resolved.baseDirectory !== undefined) {
+    resolved.baseDirectory = resolve(resolved.baseDirectory);
+  }
+  if (resolved.configDirectory !== undefined) {
+    resolved.configDirectory = resolve(resolved.configDirectory);
+  }
+  if (resolved.workingDirectory !== undefined) {
+    resolved.workingDirectory = resolve(resolved.workingDirectory);
+  }
+
+  return resolved;
+}
+
 export class CopilotRuntime extends BaseRuntime<"copilot"> {
   readonly #client: CopilotClient;
 
   constructor(options?: RuntimeOptions<"copilot">) {
     super();
-    this.#client = new CopilotClient(options);
+    this.#client = new CopilotClient(
+      options === undefined ? undefined : resolveDirectoryOptions(options),
+    );
   }
 
   async startThread(options: ThreadOptions<"copilot"> = {}): Promise<Thread<"copilot">> {
-    const session = await this.#client.createSession({
-      ...options,
-      streaming: true,
-    });
+    const session = await this.#client.createSession(
+      resolveDirectoryOptions({
+        ...options,
+        streaming: true,
+      }),
+    );
     return new CopilotThread(session);
   }
 

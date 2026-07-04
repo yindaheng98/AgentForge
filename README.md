@@ -8,6 +8,7 @@ SDK.
 
 - `codex`: wraps `@openai/codex-sdk`
 - `cursor`: wraps `@cursor/sdk`
+- `copilot`: wraps `@github/copilot-sdk`
 - `claude`: wraps `@anthropic-ai/claude-agent-sdk`
 - `qwen`: wraps `@qwen-code/sdk`
 - `opencode`: wraps `@opencode-ai/sdk`
@@ -15,8 +16,9 @@ SDK.
 The workflow layer gets `RuntimeRecord` values with a `runtime` marker added:
 `{ runtime: "codex", input }`, `{ runtime: "codex", event }`,
 `{ runtime: "cursor", message }`, `{ runtime: "cursor", result }`,
-`{ runtime: "claude", message }`, `{ runtime: "qwen", message }`,
-`{ runtime: "opencode", request }`, or `{ runtime: "opencode", event }`.
+`{ runtime: "copilot", event }`, `{ runtime: "claude", message }`,
+`{ runtime: "qwen", message }`, `{ runtime: "opencode", request }`, or
+`{ runtime: "opencode", event }`.
 
 On top of runtimes and threads, the `agent` layer lets each agent accept prompt
 variables, combine them with static prompt constants, build a prompt internally,
@@ -78,6 +80,14 @@ thread options merge over them before creating the SDK agent. Local Cursor agent
 need a `model` and usually an explicit `local.cwd`; authentication falls back to
 `CURSOR_API_KEY` when `apiKey` is omitted.
 
+For `copilot`, `runtime.options` uses `@github/copilot-sdk`
+`CopilotClientOptions` for the shared `CopilotClient`, while `thread.options`
+uses `SessionConfig` for each Copilot session. `runStreamed` enables session
+streaming by default so assistant deltas, tool events, and the final
+`assistant.message` are available as records. Authentication follows the
+Copilot SDK defaults: use `gitHubToken` when provided, otherwise the logged-in
+GitHub Copilot user is used.
+
 ```yaml
 runtimes:
   cursor-main:
@@ -91,6 +101,21 @@ runtimes:
 threads:
   cursor-review:
     runtime: cursor-main
+```
+
+```yaml
+runtimes:
+  copilot-main:
+    kind: copilot
+    options:
+      workingDirectory: .
+
+threads:
+  copilot-review:
+    runtime: copilot-main
+    options:
+      model: gpt-5
+      workingDirectory: .
 ```
 
 ```yaml
