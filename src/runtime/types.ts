@@ -5,6 +5,11 @@ import type {
   ThreadOptions as CodexSdkThreadOptions,
 } from "@openai/codex-sdk";
 import type {
+  AgentOptions as CursorSdkAgentOptions,
+  RunResult as CursorSdkRunResult,
+  SDKMessage as CursorSdkMessage,
+} from "@cursor/sdk";
+import type {
   Options as ClaudeSdkThreadOptions,
   SDKMessage as ClaudeSDKMessage,
 } from "@anthropic-ai/claude-agent-sdk";
@@ -22,12 +27,21 @@ type ClaudeSdkRuntimeOptions = ClaudeSdkThreadOptions;
 type QwenSdkRuntimeOptions = QwenSdkThreadOptions;
 type OpencodeCreateOptions = NonNullable<Parameters<OpencodeClient["session"]["create"]>[0]>;
 type OpencodeSdkThreadOptions = Omit<OpencodeCreateOptions, "throwOnError">;
+type CursorSdkRuntimeOptions = CursorSdkAgentOptions;
+type CursorSdkThreadOptions = CursorSdkAgentOptions;
 
 export type RuntimeSpec = {
   codex: {
     runtimeOptions: CodexSdkRuntimeOptions;
     threadOptions: CodexSdkThreadOptions;
     record: { runtime: "codex"; input: Input } | { runtime: "codex"; event: ThreadEvent };
+  };
+  cursor: {
+    runtimeOptions: CursorSdkRuntimeOptions;
+    threadOptions: CursorSdkThreadOptions;
+    record:
+      | { runtime: "cursor"; message: CursorSdkMessage }
+      | { runtime: "cursor"; result: CursorSdkRunResult };
   };
   claude: {
     runtimeOptions: ClaudeSdkRuntimeOptions;
@@ -51,6 +65,7 @@ export type RuntimeKind = keyof RuntimeSpec;
 
 const runtimeKindMap = {
   codex: true,
+  cursor: true,
   claude: true,
   qwen: true,
   opencode: true,

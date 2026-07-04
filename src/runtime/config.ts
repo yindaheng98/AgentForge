@@ -1,5 +1,6 @@
 import { ClaudeRuntime } from "./claude.js";
 import { CodexRuntime } from "./codex.js";
+import { CursorRuntime } from "./cursor.js";
 import { OpencodeRuntime } from "./opencode.js";
 import { QwenRuntime } from "./qwen.js";
 import { isPlainObject, type PlainObject } from "../utils/index.js";
@@ -14,6 +15,7 @@ type RuntimeFactoryMap = {
 
 const runtimeFactoryMap: RuntimeFactoryMap = {
   codex: (options) => new CodexRuntime(options),
+  cursor: (options) => new CursorRuntime(options),
   claude: (options) => new ClaudeRuntime(options),
   qwen: (options) => new QwenRuntime(options),
   opencode: (options) => new OpencodeRuntime(options),
