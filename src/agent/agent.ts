@@ -1,7 +1,8 @@
 import type { RecordCallback, Thread } from "../runtime/index.js";
+import type { PlainObject } from "../utils/index.js";
 
-export type AgentConstants = Record<string, unknown>;
-export type AgentVariables = Record<string, unknown>;
+export type AgentConstants = PlainObject;
+export type AgentVariables = PlainObject;
 
 export abstract class Agent<
   Variables extends AgentVariables = AgentVariables,
