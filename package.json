@@ -1,6 +1,6 @@
 {
   "name": "coding-agent-forge",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "A small runtime wrapper for Codex, Cursor, GitHub Copilot, Claude, Qwen Code, and opencode.",
   "repository": {
     "type": "git",

@@ -29,12 +29,14 @@ export async function runPipelineCli<
   }
 }
 
-export async function runPipelinesCli<
-  ArgsOptions extends PipelineArgsOptions,
-  VariablesByName extends AgentVariablesByName,
-  SpecByKind extends AgentFactorySpecByKind,
->(
-  pipelines: readonly Pipeline<ArgsOptions, VariablesByName, SpecByKind>[],
+type AnyPipeline = Pipeline<
+  any, // eslint-disable-line @typescript-eslint/no-explicit-any -- ArgsOptions extends PipelineArgsOptions
+  any, // eslint-disable-line @typescript-eslint/no-explicit-any -- VariablesByName extends AgentVariablesByName
+  any // eslint-disable-line @typescript-eslint/no-explicit-any -- SpecByKind extends AgentFactorySpecByKind
+>;
+
+export async function runPipelinesCli(
+  pipelines: readonly AnyPipeline[],
   argv: readonly string[],
 ): Promise<void> {
   const [name, ...args] = argv;
