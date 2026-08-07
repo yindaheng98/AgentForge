@@ -9,6 +9,6 @@ export type DefaultAgentFactorySpecByKind = {
   };
 };
 
-export const defaultAgentFactories = {
+export const defaultAgentFactories: AgentFactoryMap<DefaultAgentFactorySpecByKind> = {
   "prompt-template": (thread, constants) => new PromptTemplateAgent(thread, constants),
-} satisfies AgentFactoryMap<DefaultAgentFactorySpecByKind>;
+};
