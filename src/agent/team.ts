@@ -3,26 +3,38 @@ import type { RecordCallback, Runtime, Thread } from "../runtime/index.js";
 import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
 import type { RuntimeThreadAgentConfig } from "./config.js";
 
-export type AgentFactory<Constants extends PromptConstants = PromptConstants> = (
+export type AgentFactory<Variables extends PromptVariables, Constants extends PromptConstants> = (
   thread: Thread,
   constants: Readonly<Constants>,
-) => Agent;
+) => Agent<Variables, Constants>;
 
-export type AgentFactoryMap<Constants extends PromptConstants = PromptConstants> = Record<
-  string,
-  AgentFactory<Constants>
->;
+export type AgentFactorySpec = {
+  variables: PromptVariables;
+  constants: PromptConstants;
+};
+
+export type AgentFactorySpecByKind = Record<string, AgentFactorySpec>;
+
+export type AgentFactoryMap<SpecByKind extends AgentFactorySpecByKind = AgentFactorySpecByKind> = {
+  [Kind in keyof SpecByKind]: AgentFactory<
+    SpecByKind[Kind]["variables"],
+    SpecByKind[Kind]["constants"]
+  >;
+};
 
 export type AgentVariablesByName = Record<string, PromptVariables>;
 
-export class AgentTeam<VariablesByName extends AgentVariablesByName = AgentVariablesByName> {
+export class AgentTeam<
+  VariablesByName extends AgentVariablesByName = AgentVariablesByName,
+  SpecByKind extends AgentFactorySpecByKind = AgentFactorySpecByKind,
+> {
   readonly #agents = new Map<string, Promise<Agent>>();
   readonly #runtimes = new Map<string, Runtime>();
   readonly #threads = new Map<string, Promise<Thread>>();
 
   constructor(
     private readonly config: RuntimeThreadAgentConfig,
-    private readonly factories: AgentFactoryMap,
+    private readonly factories: AgentFactoryMap<SpecByKind>,
   ) {}
 
   private getRuntime(name: string): Runtime {
