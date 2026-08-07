@@ -19,11 +19,13 @@ export type {
 } from "./pipeline/index.js";
 
 export type {
+  AgentConstants,
   AgentDefinition,
   AgentFactory,
   AgentFactoryMap,
   AgentFactorySpec,
   AgentFactorySpecByKind,
+  AgentVariables,
   AgentVariablesByName,
   DefaultAgentFactorySpecByKind,
   PromptConstants,

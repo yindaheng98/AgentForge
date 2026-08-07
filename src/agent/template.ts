@@ -1,5 +1,8 @@
 import type { Thread } from "../runtime/index.js";
-import { Agent, type PromptConstants, type PromptVariables } from "./agent.js";
+import { Agent } from "./agent.js";
+
+export type PromptConstants = Record<string, string>;
+export type PromptVariables = Record<string, string>;
 
 export type PromptTemplateConstants = PromptConstants & {
   template: string;

@@ -1,16 +1,16 @@
 import { createRuntime, startThread } from "../runtime/config.js";
 import type { RecordCallback, Runtime, Thread } from "../runtime/index.js";
-import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
+import type { Agent, AgentConstants, AgentVariables } from "./agent.js";
 import type { RuntimeThreadAgentConfig } from "./config.js";
 
 export type AgentFactory<
-  Variables extends PromptVariables = PromptVariables,
-  Constants extends PromptConstants = PromptConstants,
+  Variables extends AgentVariables = AgentVariables,
+  Constants extends AgentConstants = AgentConstants,
 > = (thread: Thread, constants: Readonly<Constants>) => Agent<Variables, Constants>;
 
 export type AgentFactorySpec = {
-  variables: PromptVariables;
-  constants: PromptConstants;
+  variables: AgentVariables;
+  constants: AgentConstants;
 };
 
 export type AgentFactorySpecByKind = Record<string, AgentFactorySpec>;
@@ -22,7 +22,7 @@ export type AgentFactoryMap<SpecByKind extends AgentFactorySpecByKind = AgentFac
   >;
 };
 
-export type AgentVariablesByName = Record<string, PromptVariables>;
+export type AgentVariablesByName = Record<string, AgentVariables>;
 
 export class AgentTeam<
   VariablesByName extends AgentVariablesByName = AgentVariablesByName,
@@ -100,8 +100,7 @@ export class AgentTeam<
     // VariablesByName is a caller-provided type witness; factories are validated at runtime only by name.
     const cachedAgent = this.#agents.get(name);
     if (cachedAgent) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Keep the caller-provided variable type visible at the boundary.
-      return (await cachedAgent) as Agent<VariablesByName[Name]>;
+      return await cachedAgent;
     }
 
     const agent = this.createAgent(name).catch((error: unknown) => {
@@ -109,8 +108,7 @@ export class AgentTeam<
       throw error;
     });
     this.#agents.set(name, agent);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- Keep the caller-provided variable type visible at the boundary.
-    return (await agent) as Agent<VariablesByName[Name]>;
+    return await agent;
   }
 
   async runStreamed<Name extends keyof VariablesByName & string>(

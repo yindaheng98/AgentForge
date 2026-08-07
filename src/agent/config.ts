@@ -5,10 +5,10 @@ import type {
 } from "../runtime/config.js";
 import { loadRuntimeThreadConfig } from "../runtime/config.js";
 import { isPlainObject, type PlainObject } from "../utils/index.js";
-import type { PromptConstants } from "./agent.js";
+import type { AgentConstants } from "./agent.js";
 
 export type AgentDefinition<
-  Constants extends PromptConstants = PromptConstants,
+  Constants extends AgentConstants = AgentConstants,
   ThreadName extends string = string,
   Kind extends string = string,
 > = {
@@ -19,7 +19,7 @@ export type AgentDefinition<
 
 export type AgentDefinitions<ThreadName extends string = string> = Record<
   string,
-  AgentDefinition<PromptConstants, ThreadName>
+  AgentDefinition<AgentConstants, ThreadName>
 >;
 
 export function loadAgentDefinitions(
@@ -48,25 +48,16 @@ export function loadAgentDefinitions(
       throw new Error(`Unknown thread for agent ${name}: ${agent.thread}`);
     }
 
-    let constants: PromptConstants | undefined;
     if (agent.constants !== undefined) {
       if (!isPlainObject(agent.constants)) {
         throw new Error(`Agent ${name} constants must be an object`);
       }
-
-      constants = {};
-      for (const [entryKey, entryValue] of Object.entries(agent.constants)) {
-        if (typeof entryValue !== "string") {
-          throw new Error(`Agent ${name} constants.${entryKey} must be a string`);
-        }
-        constants[entryKey] = entryValue;
-      }
     }
 
     agents[name] =
-      constants === undefined
+      agent.constants === undefined
         ? { kind: agent.kind, thread: agent.thread }
-        : { kind: agent.kind, thread: agent.thread, constants };
+        : { kind: agent.kind, thread: agent.thread, constants: agent.constants };
   }
 
   return agents;
