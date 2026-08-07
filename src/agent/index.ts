@@ -3,7 +3,14 @@ export type { PromptVariables, PromptConstants } from "./agent.js";
 export type { AgentDefinition, AgentDefinitions, RuntimeThreadAgentConfig } from "./config.js";
 export { loadAgentDefinitions, loadRuntimeThreadAgentConfig } from "./config.js";
 export { AgentTeam } from "./team.js";
-export type { AgentFactory, AgentFactoryMap, AgentVariablesByName } from "./team.js";
+export type {
+  AgentFactory,
+  AgentFactoryMap,
+  AgentFactorySpec,
+  AgentFactorySpecByKind,
+  AgentVariablesByName,
+} from "./team.js";
 export { PromptTemplateAgent, formatPromptTemplate } from "./template.js";
 export type { PromptTemplateConstants } from "./template.js";
 export { defaultAgentFactories } from "./factories.js";
+export type { DefaultAgentFactorySpecByKind } from "./factories.js";

@@ -1,6 +1,14 @@
-import { PromptTemplateAgent } from "./template.js";
+import type { PromptVariables } from "./agent.js";
+import { PromptTemplateAgent, type PromptTemplateConstants } from "./template.js";
 import type { AgentFactoryMap } from "./team.js";
+
+export type DefaultAgentFactorySpecByKind = {
+  "prompt-template": {
+    variables: PromptVariables;
+    constants: PromptTemplateConstants;
+  };
+};
 
 export const defaultAgentFactories = {
   "prompt-template": (thread, constants) => new PromptTemplateAgent(thread, constants),
-} satisfies AgentFactoryMap;
+} satisfies AgentFactoryMap<DefaultAgentFactorySpecByKind>;

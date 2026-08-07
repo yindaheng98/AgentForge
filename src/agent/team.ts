@@ -3,10 +3,10 @@ import type { RecordCallback, Runtime, Thread } from "../runtime/index.js";
 import type { Agent, PromptConstants, PromptVariables } from "./agent.js";
 import type { RuntimeThreadAgentConfig } from "./config.js";
 
-export type AgentFactory<Variables extends PromptVariables, Constants extends PromptConstants> = (
-  thread: Thread,
-  constants: Readonly<Constants>,
-) => Agent<Variables, Constants>;
+export type AgentFactory<
+  Variables extends PromptVariables = PromptVariables,
+  Constants extends PromptConstants = PromptConstants,
+> = (thread: Thread, constants: Readonly<Constants>) => Agent<Variables, Constants>;
 
 export type AgentFactorySpec = {
   variables: PromptVariables;
